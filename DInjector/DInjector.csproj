@@ -57,7 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentParser.cs" />
+    <Compile Include="Utils\ArgumentParser.cs" />
     <Compile Include="Modules\CurrentThread.cs" />
     <Compile Include="Modules\FunctionPointer.cs" />
     <Compile Include="Modules\FunctionPointerV2.cs" />

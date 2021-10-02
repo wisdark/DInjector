@@ -83,11 +83,11 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("[+] CreateProcess");
+                Console.WriteLine("(Module) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("[-] CreateProcess");
+                Console.WriteLine("(Module) [-] CreateProcess");
             }
 
             // -- NtQueryInformationProcess --------------------------------------
@@ -110,11 +110,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             // -- NtReadVirtualMemory --------------------------------------------
@@ -138,11 +138,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtReadVirtualMemory");
+                Console.WriteLine("(Module) [+] NtReadVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtReadVirtualMemory: {ntstatus}");
             }
 
             byte[] baseAddressBytes = new byte[bytesRead];
@@ -163,11 +163,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtReadVirtualMemory");
+                Console.WriteLine("(Module) [+] NtReadVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtReadVirtualMemory: {ntstatus}");
             }
 
             byte[] dataBytes = new byte[bytesRead];
@@ -201,11 +201,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtWriteVirtualMemory -------------------------------------------
@@ -228,11 +228,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtWriteVirtualMemory");
+                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             // -- NtProtectVirtualMemory -----------------------------------------
@@ -248,11 +248,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtResumeThread -------------------------------------------------
@@ -268,11 +268,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtResumeThread");
+                Console.WriteLine("(Module) [+] NtResumeThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtResumeThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtResumeThread: {ntstatus}");
             }
         }
     }

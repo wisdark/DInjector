@@ -48,11 +48,11 @@ namespace DInjector
 
                     if (ntstatus == 0)
                     {
-                        Console.WriteLine("[+] NtProtectVirtualMemory");
+                        Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
                     }
                     else
                     {
-                        Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                        Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
                     }
 
                     pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(oldAddress, typeof(pFunction));

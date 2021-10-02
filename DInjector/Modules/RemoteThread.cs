@@ -95,11 +95,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtOpenProcess");
+                Console.WriteLine("(Module) [+] NtOpenProcess");
             }
             else
             {
-                Console.WriteLine($"[-] NtOpenProcess: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtOpenProcess: {ntstatus}");
             }
 
             // -- NtAllocateVirtualMemory ----------------------------------------
@@ -120,11 +120,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             // -- NtWriteVirtualMemory -------------------------------------------
@@ -146,11 +146,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtWriteVirtualMemory");
+                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
@@ -171,11 +171,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtCreateThreadEx -----------------------------------------------
@@ -200,11 +200,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtCreateThreadEx");
+                Console.WriteLine("(Module) [+] NtCreateThreadEx");
             }
             else
             {
-                Console.WriteLine($"[-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
             }
         }
     }

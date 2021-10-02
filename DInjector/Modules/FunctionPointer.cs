@@ -43,11 +43,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);

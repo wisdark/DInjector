@@ -100,11 +100,11 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("[+] CreateProcess");
+                Console.WriteLine("(Module) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("[-] CreateProcess");
+                Console.WriteLine("(Module) [-] CreateProcess");
             }
 
             // -- NtAllocateVirtualMemory ----------------------------------------
@@ -127,11 +127,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             // -- NtWriteVirtualMemory -------------------------------------------
@@ -153,11 +153,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtWriteVirtualMemory");
+                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
@@ -178,11 +178,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtCreateThreadEx(LoadLibraryA) ---------------------------------
@@ -210,11 +210,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtCreateThreadEx");
+                Console.WriteLine("(Module) [+] NtCreateThreadEx");
             }
             else
             {
-                Console.WriteLine($"[-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
             }
 
             // -- GetThreadContext -----------------------------------------------
@@ -231,11 +231,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtGetContextThread");
+                Console.WriteLine("(Module) [+] NtGetContextThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtGetContextThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtGetContextThread: {ntstatus}");
             }
 
             // -- SetThreadContext -----------------------------------------------
@@ -251,11 +251,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtSetContextThread");
+                Console.WriteLine("(Module) [+] NtSetContextThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtSetContextThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtSetContextThread: {ntstatus}");
             }
 
             // -- NtResumeThread -------------------------------------------------
@@ -271,11 +271,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtResumeThread");
+                Console.WriteLine("(Module) [+] NtResumeThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtResumeThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtResumeThread: {ntstatus}");
             }
         }
     }

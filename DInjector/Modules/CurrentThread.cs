@@ -67,11 +67,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
@@ -92,11 +92,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtCreateThreadEx -----------------------------------------------
@@ -121,11 +121,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtCreateThreadEx");
+                Console.WriteLine("(Module) [+] NtCreateThreadEx");
             }
             else
             {
-                Console.WriteLine($"[-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
             }
 
             // -- NtWaitForSingleObject ------------------------------------------
@@ -140,11 +140,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtWaitForSingleObject");
+                Console.WriteLine("(Module) [+] NtWaitForSingleObject");
             }
             else
             {
-                Console.WriteLine($"[-] NtWaitForSingleObject: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtWaitForSingleObject: {ntstatus}");
             }
         }
     }

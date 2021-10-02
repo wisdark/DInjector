@@ -109,11 +109,11 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("[+] CreateProcess");
+                Console.WriteLine("(Module) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("[-] CreateProcess");
+                Console.WriteLine("(Module) [-] CreateProcess");
             }
 
             // -- NtAllocateVirtualMemory ----------------------------------------
@@ -136,11 +136,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAllocateVirtualMemory");
+                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             // -- NtWriteVirtualMemory -------------------------------------------
@@ -162,11 +162,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtWriteVirtualMemory");
+                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
@@ -187,11 +187,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtProtectVirtualMemory");
+                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"[-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
             // -- NtOpenThread ---------------------------------------------------
@@ -211,11 +211,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtOpenThread");
+                Console.WriteLine("(Module) [+] NtOpenThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtOpenThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtOpenThread: {ntstatus}");
             }
 
             // -- NtQueueApcThread -----------------------------------------------
@@ -232,11 +232,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtQueueApcThread");
+                Console.WriteLine("(Module) [+] NtQueueApcThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtQueueApcThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtQueueApcThread: {ntstatus}");
             }
 
             // -- NtAlertResumeThread --------------------------------------------
@@ -252,11 +252,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("[+] NtAlertResumeThread");
+                Console.WriteLine("(Module) [+] NtAlertResumeThread");
             }
             else
             {
-                Console.WriteLine($"[-] NtAlertResumeThread: {ntstatus}");
+                Console.WriteLine($"(Module) [-] NtAlertResumeThread: {ntstatus}");
             }
         }
     }
