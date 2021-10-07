@@ -20,8 +20,6 @@ DInjector
 
 This repository is an accumulation of my code snippets for various **shellcode injection** techniques using fantastic [D/Invoke](https://thewover.github.io/Dynamic-Invoke/) API by @TheWover and @FuzzySecurity.
 
-Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I recommend to modify it and include from [source](https://github.com/TheWover/DInvoke) to achieve better opsec.
-
 DInjector is not intended to be used for AV/EDR evasion out-of-the-box, but provides a bunch of weaponized examples to improve your generic tradecraft during the engagement and/or sharpen your detection rules to prevent this sort of shellcode execution.
 
 Some tips how the driver [Program](/DInjector/Program.cs) can be enhanced (leaving it as an exercise for the reader):
@@ -30,6 +28,8 @@ Some tips how the driver [Program](/DInjector/Program.cs) can be enhanced (leavi
 * Add built-in AMSI bypass (a great example from @rasta-mouse is [here](https://rastamouse.me/memory-patching-amsi-bypass/)).
 * Add sandbox detection methods.
 * Protect the resulting assembly with [ConfuserEx](https://github.com/yck1509/ConfuserEx) or similar tools.
+
+**Note:** based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I recommend to modify it and include from [source](https://github.com/TheWover/DInvoke) to achieve better opsec.
 
 ## Usage
 
