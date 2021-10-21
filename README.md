@@ -41,7 +41,7 @@ Features:
 3. Encrypt the shellcode:
 
 ```console
-~$ Crypto/encrypt.py shellcode.bin -p 'Passw0rd!' -o enc
+~$ encrypt.py shellcode.bin -p 'Passw0rd!' -o enc
 ```
 
 4. Serve the encrypted shellcode and prepare C2 listener:
