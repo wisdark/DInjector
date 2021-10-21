@@ -23,15 +23,15 @@ This repository is an accumulation of my code snippets for various **shellcode i
 Features:
 
 * Fully ported to D/Invoke API.
-* Encrypted payloads which can be invoked from a URL or passed in Base64 as an argument.
+* Encrypted payloads which can be invoked from a URL or passed in base64 as an argument.
 * Built-in AMSI bypass based on @rasta-mouse [method](https://rastamouse.me/memory-patching-amsi-bypass/).
 * Sandbox detection & evasion.
 
-:information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better opsec.
+:information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
 ## Usage
 
-1. Compile the project in Visual Studio.
+1. Compile the project in VS.
 2. Generate a shellcode for your favourite C2:
 
 ```console
@@ -57,7 +57,7 @@ Features:
 
 Global required arguments:
 
-| Key         | Value                    | Description                                                        |
+| Name        | Example Value            | Description                                                        |
 |-------------|--------------------------|--------------------------------------------------------------------|
 | `/am51`     | `true`, `false`          | Applies AMSI bypass                                                |
 | `/sc`       | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a Base64 string) |
@@ -65,7 +65,7 @@ Global required arguments:
 
 ## Modules
 
-:warning: opsec safe considerations are based on my personal expirience and some testings along the way.
+:warning: OpSec safe considerations are based on my personal usage expirience and some testings along the way.
 
 ### [FunctionPointer](/DInjector/Modules/FunctionPointer.cs)
 
