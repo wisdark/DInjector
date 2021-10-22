@@ -55,7 +55,7 @@ Features:
 
 :warning: I **do not** recommend putting the assembly on disk because it will very likely be flagged.
 
-Global required arguments:
+Required global arguments:
 
 | Name        | Example Value            | Description                                                        |
 |-------------|--------------------------|--------------------------------------------------------------------|
