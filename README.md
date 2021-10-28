@@ -60,7 +60,7 @@ Required global arguments:
 
 | Name        | Example Value            | Description                                                        |
 |-------------|--------------------------|--------------------------------------------------------------------|
-| `/am51`     | `true`, `false`          | Applies AMSI bypass                                                |
+| `/am51`     | `True`, `False`          | Applies AMSI bypass                                                |
 | `/sc`       | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a Base64 string) |
 | `/password` | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
 
@@ -171,13 +171,16 @@ references:
 ```yaml
 module_name: 'remotethreadapc'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtQueueApcThread.
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
@@ -196,13 +199,16 @@ references:
 ```yaml
 module_name: 'remotethreadcontext'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via SetThreadContext.
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
@@ -222,13 +228,16 @@ references:
 ```yaml
 module_name: 'processhollow'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtResumeThread (hollowing with shellcode).
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtQueryInformationProcess'
     2: 'NtReadVirtualMemory'
