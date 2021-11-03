@@ -1,5 +1,5 @@
 # MODULE
-$M = "remotethreadapc"
+$M = "currentthread"
 
 # LHOST
 $H = "10.10.13.37"
