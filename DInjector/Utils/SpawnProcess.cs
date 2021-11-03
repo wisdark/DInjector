@@ -10,7 +10,7 @@ namespace DInjector
     {
         public static bool Is64Bit => IntPtr.Size == 8;
 
-        /*[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate bool InitializeProcThreadAttributeList(
             IntPtr lpAttributeList,
             int dwAttributeCount,
@@ -29,29 +29,6 @@ namespace DInjector
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate bool DeleteProcThreadAttributeList(
-            IntPtr lpAttributeList);*/
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool InitializeProcThreadAttributeList(
-            IntPtr lpAttributeList,
-            int dwAttributeCount,
-            int dwFlags,
-            ref IntPtr lpSize);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool UpdateProcThreadAttribute(
-            IntPtr lpAttributeList,
-            uint dwFlags,
-            IntPtr Attribute,
-            IntPtr lpValue,
-            IntPtr cbSize,
-            IntPtr lpPreviousValue,
-            IntPtr lpReturnSize);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool DeleteProcThreadAttributeList(
             IntPtr lpAttributeList);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -69,42 +46,25 @@ namespace DInjector
 
         public static bool initializeProcThreadAttributeList(IntPtr lpAttributeList, int dwAttributeCount, ref IntPtr lpSize)
         {
-            //IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "InitializeProcThreadAttributeList");
-            //InitializeProcThreadAttributeList dInitializeProcThreadAttributeList = (InitializeProcThreadAttributeList)Marshal.GetDelegateForFunctionPointer(pointer, typeof(InitializeProcThreadAttributeList));
+            object[] parameters = { lpAttributeList, dwAttributeCount, 0, lpSize };
+            var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "InitializeProcThreadAttributeList", typeof(InitializeProcThreadAttributeList), ref parameters);
 
-            var result = InitializeProcThreadAttributeList(
-                lpAttributeList,
-                dwAttributeCount,
-                0,
-                ref lpSize);
-
+            lpSize = (IntPtr)parameters[3];
             return result;
         }
 
         public static bool updateProcThreadAttribute(IntPtr lpAttributeList, IntPtr attribute, IntPtr lpValue)
         {
-            //IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "UpdateProcThreadAttribute");
-            //UpdateProcThreadAttribute dUpdateProcThreadAttribute = (UpdateProcThreadAttribute)Marshal.GetDelegateForFunctionPointer(pointer, typeof(UpdateProcThreadAttribute));
-
-            var result = UpdateProcThreadAttribute(
-                lpAttributeList,
-                (uint)0,
-                attribute,
-                lpValue,
-                (IntPtr)IntPtr.Size,
-                IntPtr.Zero,
-                IntPtr.Zero);
+            object[] parameters = { lpAttributeList, (uint)0, attribute, lpValue, (IntPtr)IntPtr.Size, IntPtr.Zero, IntPtr.Zero };
+            var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "UpdateProcThreadAttribute", typeof(UpdateProcThreadAttribute), ref parameters, true);
 
             return result;
         }
 
-        public static bool deleteProcThreadAttribute(IntPtr lpAttributeList)
+        public static bool deleteProcThreadAttributeList(IntPtr lpAttributeList)
         {
-            //IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "DeleteProcThreadAttributeList");
-            //DeleteProcThreadAttributeList dDeleteProcThreadAttributeList = (DeleteProcThreadAttributeList)Marshal.GetDelegateForFunctionPointer(pointer, typeof(DeleteProcThreadAttributeList));
-
-            var result = deleteProcThreadAttribute(
-                lpAttributeList);
+            object[] parameters = { lpAttributeList };
+            var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "DeleteProcThreadAttributeList", typeof(DeleteProcThreadAttributeList), ref parameters);
 
             return result;
         }
@@ -116,7 +76,7 @@ namespace DInjector
             var pi = new DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION();
 
             object[] parameters = { applicationName, null, pa, ta, false, creationFlags, IntPtr.Zero, workingDirectory, startupInfoEx, pi };
-            var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke(@"kernel32.dll", @"CreateProcessA", typeof(CreateProcessA), ref parameters);
+            var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "CreateProcessA", typeof(CreateProcessA), ref parameters);
 
             if (!result) processInformation = pi;
             processInformation = (DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION)parameters[9];
@@ -215,16 +175,15 @@ namespace DInjector
 
             if (result)
             {
-                Console.WriteLine("(SpawnProcess) [+] CreateProcess");
+                Console.WriteLine("(SpawnProcess) [+] CreateProcessA");
             }
             else
             {
-                Console.WriteLine("(SpawnProcess) [-] CreateProcess");
+                Console.WriteLine("(SpawnProcess) [-] CreateProcessA");
             }
 
-            // Suppose we don't really care if this fails
-            //_ = deleteProcThreadAttribute(startupInfoEx.lpAttributeList);
-            //Marshal.FreeHGlobal(lpValue);
+            _ = deleteProcThreadAttributeList(startupInfoEx.lpAttributeList);
+            Marshal.FreeHGlobal(lpValue);
 
             return pi;
         }
