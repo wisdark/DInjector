@@ -25,8 +25,7 @@ namespace DInjector
         static void Boom(string[] args)
         {
             // Check if we're in a sandbox by calling a rare-emulated API
-            IntPtr mem = VirtualAllocExNuma(Process.GetCurrentProcess().Handle, IntPtr.Zero, 0x1000, 0x3000, 0x4, 0);
-            if (mem == null)
+            if (VirtualAllocExNuma(Process.GetCurrentProcess().Handle, IntPtr.Zero, 0x1000, 0x3000, 0x4, 0) == IntPtr.Zero)
             {
                 Console.WriteLine("(VirtualAllocExNuma) [-] Failed check");
                 return;

