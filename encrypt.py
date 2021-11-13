@@ -25,6 +25,21 @@ class AES:
 		return self.iv + encryptor.update(raw) + encryptor.finalize()
 
 
+class XOR:
+
+	def __init__(self, key):
+		self.key = key
+
+	def encrypt(self, raw):
+		output = ''
+		for i in range(len(raw)):
+			c = raw[i]
+			k = self.key[i % len(self.key)]
+			output += chr(ord(c) ^ ord(k))
+
+		return output
+
+
 def parse_args():
 	parser = ArgumentParser()
 	parser.add_argument('shellcode_bin', action='store', type=str)
@@ -46,7 +61,9 @@ if __name__ == '__main__':
 		ctx = AES(args.password, iv)
 		enc = ctx.encrypt(shellcode)
 	elif args.algorithm == 'xor':
-		enc = bytearray(b ^ ord(args.password) for b in shellcode)
+		ctx = XOR(args.password)
+
+	enc = ctx.encrypt(shellcode)
 
 	if args.base64:
 		print(b64encode(enc).decode())

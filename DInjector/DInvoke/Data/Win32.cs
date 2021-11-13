@@ -30,6 +30,13 @@ namespace DInvoke.Data
             public static uint MEM_DECOMMIT = 0x4000;
             public static uint MEM_RELEASE = 0x8000;
 
+            public static long BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON = 0x100000000000;
+
+            public static uint PROC_THREAD_ATTRIBUTE_PARENT_PROCESS = 0x00020000;
+            public static uint PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY = 0x20007;
+
+            public static uint EXTENDED_STARTUPINFO_PRESENT = 0x00080000;
+
             [Flags]
             public enum ProcessAccessFlags : UInt32
             {
@@ -89,6 +96,12 @@ namespace DInvoke.Data
                 SetLimitedInformation = 0x0400,
                 QueryLimitedInformation = 0x0800,
                 All = StandardRights.Required | StandardRights.Synchronize | 0x3ff
+            }
+
+            [Flags]
+            public enum STARTF : uint
+            {
+                STARTF_USESHOWWINDOW = 0x00000001,
             }
         }
 
@@ -222,6 +235,17 @@ namespace DInvoke.Data
             };
         }
 
+        public static class WinBase
+        {
+            [StructLayout(LayoutKind.Sequential)]
+            public struct SECURITY_ATTRIBUTES
+            {
+                uint nLength;
+                IntPtr lpSecurityDescriptor;
+                bool bInheritHandle;
+            };
+        }
+
         public class ProcessThreadsAPI
         {
             // https://msdn.microsoft.com/en-us/library/windows/desktop/ms686331(v=vs.85).aspx
@@ -246,6 +270,14 @@ namespace DInvoke.Data
                 public IntPtr hStdInput;
                 public IntPtr hStdOutput;
                 public IntPtr hStdError;
+            };
+
+            //https://msdn.microsoft.com/en-us/library/windows/desktop/ms686331(v=vs.85).aspx
+            [StructLayout(LayoutKind.Sequential)]
+            public struct _STARTUPINFOEX
+            {
+                public _STARTUPINFO StartupInfo;
+                public IntPtr lpAttributeList;
             };
 
             //https://msdn.microsoft.com/en-us/library/windows/desktop/ms684873(v=vs.85).aspx

