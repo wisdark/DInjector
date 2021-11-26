@@ -25,7 +25,7 @@ Features:
 * Fully ported to D/Invoke API
 * Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
 * Built-in AMSI bypass
-* PPID spoofing and block non-Microsoft DLLs (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
+* [PPID spoofing](https://www.ired.team/offensive-security/defense-evasion/parent-process-id-ppid-spoofing) and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
 * Sandbox detection & evasion
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
@@ -73,7 +73,7 @@ Required global arguments:
 ```yaml
 module_name: 'functionpointer'
 description: |
-  Allocates a RWX memory region, copies the shellcode into it
+  Allocates a RW memory region, copies the shellcode into it
   and executes it like a function.
 calls:
   - ntdll.dll:
@@ -91,7 +91,7 @@ references:
 ```yaml
 module_name: 'functionpointerv2'
 description: |
-  Sets RWX on a byte array and executes it like a function.
+  Sets RX on a byte array and executes it like a function.
 calls:
   - ntdll.dll:
     1: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
@@ -100,6 +100,25 @@ references:
   - 'https://jhalon.github.io/utilizing-syscalls-in-csharp-1/'
   - 'https://jhalon.github.io/utilizing-syscalls-in-csharp-2/'
   - 'https://github.com/jhalon/SharpCall/blob/master/Syscalls.cs'
+```
+
+### [ClipboardPointer](/DInjector/Modules/ClipboardPointer.cs)
+
+```yaml
+module_name: 'clipboardpointer'
+description: |
+  Copies shellcode bytes into the Clipboard,
+  sets RX on it and executes it like a function.
+calls:
+  - user32.dll:
+    1: 'OpenClipboard'
+    2: 'SetClipboardData'
+    3: 'CloseClipboard'
+  - ntdll.dll:
+    1: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+opsec_safe: true
+references:
+  - 'https://gist.github.com/Wra7h/69a03c802ae6977e74b1152a4b004515'
 ```
 
 ### [CurrentThread](/DInjector/Modules/CurrentThread.cs)

