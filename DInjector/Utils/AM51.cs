@@ -8,8 +8,11 @@ namespace DInjector
 {
     class AM51
     {
+        //private static readonly byte[] x64 = new byte[] { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3 };
+        //private static readonly byte[] x86 = new byte[] { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC2, 0x18, 0x00 };
+
         // xor rax, rax
-        private static readonly byte[] x64 = new byte[] {0x48, 0x31, 0xC0};
+        private static readonly byte[] x64 = new byte[] { 0x48, 0x31, 0xC0 };
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr LoadLibraryA(
