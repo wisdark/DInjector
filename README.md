@@ -107,7 +107,7 @@ references:
 ```yaml
 module_name: 'clipboardpointer'
 description: |
-  Copies shellcode bytes into the Clipboard,
+  Copies shellcode bytes into the clipboard,
   sets RX on it and executes it like a function.
 calls:
   - user32.dll:

