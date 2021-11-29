@@ -33,7 +33,7 @@ $K = "True"
 
 # --------------------------------------------------------------------
 
-$methods = @("remotethread", "remotethreadsuspended")
+$methods = @("remotethread", "remotethreadview", "remotethreadsuspended")
 if ($methods.Contains($A)) {
     $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }

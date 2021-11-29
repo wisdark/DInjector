@@ -160,6 +160,29 @@ references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
 ```
 
+### [RemoteThreadView](/DInjector/Modules/RemoteThreadView.cs)
+
+```yaml
+module_name: 'remotethreadview'
+arguments: |
+  /pid:1337
+description: |
+  Injects shellcode into an existing remote process.
+  Thread execution via RtlCreateUserThread.
+calls:
+  - ntdll.dll:
+    1: 'NtOpenProcess'
+    2: 'NtCreateSection (PAGE_EXECUTE_READWRITE)'
+    3: 'NtMapViewOfSection (PAGE_READWRITE)'
+    4: 'NtMapViewOfSection (PAGE_EXECUTE_READ)'
+    5: 'RtlCreateUserThread'
+    6: 'NtUnmapViewOfSection'
+    7: 'NtClose'
+opsec_safe: false
+references:
+  - 'https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/Sections%20Shellcode%20Process%20Injector/Program.cs'
+```
+
 ### [RemoteThreadSuspended](/DInjector/Modules/RemoteThreadSuspended.cs)
 
 ```yaml

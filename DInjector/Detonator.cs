@@ -106,6 +106,11 @@ namespace DInjector
                         shellcodeBytes,
                         int.Parse(options["/pid"]));
                     break;
+                case "remotethreadview":
+                    RemoteThreadView.Execute(
+                        shellcodeBytes,
+                        int.Parse(options["/pid"]));
+                    break;
                 case "remotethreadsuspended":
                     RemoteThreadSuspended.Execute(
                         shellcodeBytes,
