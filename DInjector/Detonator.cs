@@ -49,21 +49,15 @@ namespace DInjector
             try
             {
                 if (bool.Parse(options["/am51"]))
-                {
                     AM51.Patch();
-                }
             }
             catch (Exception)
             { }
 
             var commandName = string.Empty;
             foreach (KeyValuePair<string, string> item in options)
-            {
                 if (item.Value == string.Empty)
-                {
                     commandName = item.Key;
-                }
-            }
 
             var shellcodePath = options["/sc"];
             var password = options["/password"];

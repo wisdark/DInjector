@@ -112,13 +112,9 @@ namespace DInjector
                 ref lpSize);
 
             if (result)
-            {
                 Console.WriteLine("(SpawnProcess) [+] InitializeProcThreadAttributeList");
-            }
             else
-            {
                 throw new Exception("(SpawnProcess) [-] InitializeProcThreadAttributeList");
-            }
 
             if (blockDlls)
             {
@@ -133,13 +129,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                {
                     Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (blockDLLs)");
-                }
                 else
-                {
                     throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (blockDLLs)");
-                }
             }
 
             if (ppid != 0)
@@ -154,13 +146,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                {
                     Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (PPID)");
-                }
                 else
-                {
                     throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (PPID)");
-                }
             }
 
             var flags = DI.Data.Win32.Kernel32.EXTENDED_STARTUPINFO_PRESENT;
@@ -174,13 +162,9 @@ namespace DInjector
                 out var pi);
 
             if (result)
-            {
                 Console.WriteLine("(SpawnProcess) [+] CreateProcessA");
-            }
             else
-            {
                 Console.WriteLine("(SpawnProcess) [-] CreateProcessA");
-            }
 
             _ = deleteProcThreadAttributeList(startupInfoEx.lpAttributeList);
             Marshal.FreeHGlobal(lpValue);

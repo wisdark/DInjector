@@ -99,13 +99,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtOpenProcess");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtOpenProcess: {ntstatus}");
-            }
 
             #endregion
 
@@ -126,13 +122,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
@@ -154,13 +146,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtWriteVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtWriteVirtualMemory: {ntstatus}");
-            }
 
             Marshal.FreeHGlobal(buffer);
 
@@ -179,13 +167,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_NOACCESS");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_NOACCESS: {ntstatus}");
-            }
 
             #endregion
 
@@ -210,13 +194,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtCreateThreadEx, CREATE_SUSPENDED");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtCreateThreadEx, CREATE_SUSPENDED: {ntstatus}");
-            }
 
             #endregion
 
@@ -239,13 +219,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             #endregion
 
@@ -261,13 +237,9 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtResumeThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtResumeThread: {ntstatus}");
-            }
 
             #endregion
         }

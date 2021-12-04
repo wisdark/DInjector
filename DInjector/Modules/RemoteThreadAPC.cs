@@ -117,13 +117,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
@@ -145,13 +141,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtWriteVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtWriteVirtualMemory: {ntstatus}");
-            }
 
             Marshal.FreeHGlobal(buffer);
 
@@ -170,13 +162,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             #endregion
 
@@ -196,13 +184,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtOpenThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtOpenThread: {ntstatus}");
-            }
 
             #endregion
 
@@ -219,13 +203,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtQueueApcThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtQueueApcThread: {ntstatus}");
-            }
 
             #endregion
 
@@ -241,13 +221,9 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadAPC) [+] NtAlertResumeThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadAPC) [-] NtAlertResumeThread: {ntstatus}");
-            }
 
             #endregion
         }

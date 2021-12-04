@@ -91,13 +91,9 @@ namespace DInjector
                 ref returnLength);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtAllocateVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtAllocateVirtualMemory: {ntstatus}");
-            }
 
             #endregion
 
@@ -121,13 +117,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
-            }
 
             byte[] baseAddressBytes = new byte[bytesRead];
             Marshal.Copy(baseAddress, baseAddressBytes, 0, (int)bytesRead);
@@ -146,13 +138,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
-            }
 
             byte[] dataBytes = new byte[bytesRead];
             Marshal.Copy(data, dataBytes, 0, (int)bytesRead);
@@ -186,13 +174,9 @@ namespace DInjector
                 out oldProtect);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
@@ -215,13 +199,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtWriteVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtWriteVirtualMemory: {ntstatus}");
-            }
 
             #endregion
 
@@ -235,13 +215,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, oldProtect");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
-            }
 
             #endregion
 
@@ -257,13 +233,9 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(ProcessHollow) [+] NtResumeThread");
-            }
             else
-            {
                 Console.WriteLine($"(ProcessHollow) [-] NtResumeThread: {ntstatus}");
-            }
 
             #endregion
         }

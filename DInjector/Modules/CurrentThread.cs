@@ -66,13 +66,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(CurrentThread) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(CurrentThread) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
-            }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
 
@@ -91,13 +87,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(CurrentThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(CurrentThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             #endregion
 
@@ -122,13 +114,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(CurrentThread) [+] NtCreateThreadEx");
-            }
             else
-            {
                 Console.WriteLine($"(CurrentThread) [-] NtCreateThreadEx: {ntstatus}");
-            }
 
             #endregion
 
@@ -143,13 +131,9 @@ namespace DInjector
                 0);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject");
-            }
             else
-            {
                 Console.WriteLine($"(CurrentThread) [-] NtWaitForSingleObject: {ntstatus}");
-            }
 
             #endregion
         }

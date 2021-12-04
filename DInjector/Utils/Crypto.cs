@@ -17,14 +17,12 @@ namespace DInjector
         private byte[] PerformCryptography(ICryptoTransform cryptoTransform, byte[] data)
         {
             using (var memoryStream = new MemoryStream())
-            {
                 using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
                 {
                     cryptoStream.Write(data, 0, data.Length);
                     cryptoStream.FlushFinalBlock();
                     return memoryStream.ToArray();
                 }
-            }
         }
 
         public byte[] Decrypt(byte[] data)
@@ -40,9 +38,7 @@ namespace DInjector
                 aes.Padding = PaddingMode.PKCS7;
 
                 using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
-                {
                     return PerformCryptography(decryptor, encrypted);
-                }
             }
         }
     }

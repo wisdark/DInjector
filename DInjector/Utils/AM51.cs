@@ -92,13 +92,9 @@ namespace DInjector
                     out oldProtect);
 
                 if (ntstatus == 0)
-                {
                     Console.WriteLine("(AM51) [+] NtProtectVirtualMemory");
-                }
                 else
-                {
                     Console.WriteLine($"(AM51) [-] NtProtectVirtualMemory: {ntstatus}");
-                }
 
                 Console.WriteLine("(AM51) [>] Patching at address: " + string.Format("{0:X}", oldAddress.ToInt64()));
                 Marshal.Copy(patch, 0, oldAddress, patch.Length);
@@ -118,13 +114,9 @@ namespace DInjector
                     out uint _);
 
                 if (ntstatus == 0)
-                {
                     Console.WriteLine("(AM51) [+] NtProtectVirtualMemory");
-                }
                 else
-                {
                     Console.WriteLine($"(AM51) [-] NtProtectVirtualMemory: {ntstatus}");
-                }
 
                 #endregion
             }

@@ -46,13 +46,9 @@ namespace DInjector
                         out uint _);
 
                     if (ntstatus == 0)
-                    {
                         Console.WriteLine("(FunctionPointerV2) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-                    }
                     else
-                    {
                         Console.WriteLine($"(FunctionPointerV2) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-                    }
 
                     pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(oldAddress, typeof(pFunction));
                     f();
