@@ -19,8 +19,7 @@ namespace DInjector
             UInt32 nndPreferred);
 
         [DllImport("kernel32.dll")]
-        static extern void Sleep(
-            uint dwMilliseconds);
+        static extern void Sleep(uint dwMilliseconds);
 
         static void Boom(string[] args)
         {
