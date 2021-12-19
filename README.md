@@ -160,6 +160,28 @@ references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
 ```
 
+### [RemoteThreadDll](/DInjector/Modules/RemoteThreadDll.cs)
+
+```yaml
+module_name: 'remotethreaddll'
+arguments: |
+  /pid:1337
+  /dll:msvcp_win.dll
+description: |
+  Injects shellcode into an existing remote process
+  overwriting one of its loaded modules' .text section.
+  Thread execution via NtCreateThreadEx.
+calls:
+  - ntdll.dll:
+    1: 'NtOpenProcess'
+    2: 'NtWriteVirtualMemory'
+    3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+    4: 'NtCreateThreadEx'
+opsec_safe: -
+references:
+  - 'https://www.netero1010-securitylab.com/eavsion/alternative-process-injection'
+```
+
 ### [RemoteThreadView](/DInjector/Modules/RemoteThreadView.cs)
 
 ```yaml
