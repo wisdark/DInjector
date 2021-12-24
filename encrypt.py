@@ -3,6 +3,7 @@
 import os
 import hashlib
 from base64 import b64encode
+from subprocess import check_output
 from argparse import ArgumentParser
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -42,19 +43,34 @@ class XOR:
 
 def parse_args():
 	parser = ArgumentParser()
-	parser.add_argument('shellcode_bin', action='store', type=str)
-	parser.add_argument('-p', '--password', action='store', type=str, required=True)
-	parser.add_argument('-a', '--algorithm', action='store', type=str, default='aes', choices=['aes', 'xor'])
-	parser.add_argument('-o', '--output', action='store', type=str)
-	parser.add_argument('--base64', action='store_true', default=False)
+	parser.add_argument('shellcode_bin', action='store', type=str,
+                                         help='shellcode binary file path')
+	parser.add_argument('-p', '--password', action='store', type=str, required=True,
+                                            help='password to encrypt the shellcode with')
+	parser.add_argument('-a', '--algorithm', action='store', type=str, default='aes', choices=['aes', 'xor'],
+                                             help='algorithm to encrypt the shellcode with')
+	parser.add_argument('-o', '--output', action='store', type=str,
+                                          help='output file path')
+	parser.add_argument('--sgn', action='store', type=str,
+                                 help='path to the sgn encoder (https://github.com/EgeBalci/sgn/releases)')
+	parser.add_argument('--base64', action='store_true', default=False,
+                                    help='print the output in base64')
 	return parser.parse_args()
 
 
 if __name__ == '__main__':
 	args = parse_args()
 
-	with open(args.shellcode_bin, 'rb') as fd:
+	shellcode_bin = args.shellcode_bin
+	if args.sgn:
+		print(check_output([args.sgn, args.shellcode_bin]).decode())
+		shellcode_bin += '.sgn'
+
+	with open(shellcode_bin, 'rb') as fd:
 		shellcode = fd.read()
+
+	if args.sgn:
+		os.remove(shellcode_bin)
 
 	if args.algorithm == 'aes':
 		iv = os.urandom(16)
