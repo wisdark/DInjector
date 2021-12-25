@@ -3,7 +3,6 @@
 import os
 import hashlib
 from base64 import b64encode
-from subprocess import check_output
 from argparse import ArgumentParser
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -63,7 +62,7 @@ if __name__ == '__main__':
 
 	shellcode_bin = args.shellcode_bin
 	if args.sgn:
-		print(check_output([args.sgn, args.shellcode_bin]).decode())
+		os.system(f'{args.sgn} {args.shellcode_bin}')
 		shellcode_bin += '.sgn'
 
 	with open(shellcode_bin, 'rb') as fd:

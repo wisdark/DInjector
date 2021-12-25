@@ -8,6 +8,7 @@ namespace DInjector
 {
     class AM51
     {
+        // mov    eax,0x80070057 (E_INVALIDARG); ret
         //private static readonly byte[] x64 = new byte[] { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3 };
         //private static readonly byte[] x86 = new byte[] { 0xB8, 0x57, 0x00, 0x07, 0x80, 0xC2, 0x18, 0x00 };
 
