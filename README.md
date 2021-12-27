@@ -152,7 +152,7 @@ calls:
     2: 'EnumSystemLocalesA'
   - rpcrt4.dll:
     1: 'UuidFromStringA'
-opsec_safe: -
+opsec_safe: false
 references:
   - 'https://blog.sunggwanchoi.com/eng-uuid-shellcode-execution/'
   - 'https://github.com/ChoiSG/UuidShellcodeExec/blob/main/USEConsole/Program.cs'
