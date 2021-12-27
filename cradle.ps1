@@ -7,6 +7,7 @@ Module name. Choose from:
   "functionpointerv2",
   "clipboardpointer",
   "currentthread",
+  "currentthreaduuid",
   "remotethread",
   "remotethreaddll",
   "remotethreadview",

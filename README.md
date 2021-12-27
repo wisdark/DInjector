@@ -139,6 +139,25 @@ references:
   - 'https://github.com/XingYun-Cloud/D-Invoke-syscall/blob/main/Program.cs'
 ```
 
+### [CurrentThreadUuid](/DInjector/Modules/CurrentThreadUuid.cs)
+
+```yaml
+module_name: 'currentthreaduuid'
+description: |
+  Injects shellcode into current process.
+  Thread execution via EnumSystemLocalesA.
+calls:
+  - kernel32.dll:
+    1: 'HeapCreate'
+    2: 'EnumSystemLocalesA'
+  - rpcrt4.dll:
+    1: 'UuidFromStringA'
+opsec_safe: -
+references:
+  - 'https://blog.sunggwanchoi.com/eng-uuid-shellcode-execution/'
+  - 'https://github.com/ChoiSG/UuidShellcodeExec/blob/main/USEConsole/Program.cs'
+```
+
 ### [RemoteThread](/DInjector/Modules/RemoteThread.cs)
 
 ```yaml
