@@ -254,7 +254,9 @@ references:
 ```yaml
 module_name: 'remotethreadapc'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
+  /image:C:\Windows\System32\svchost.exe
+  /ppid:31337
+  /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtQueueApcThread.
@@ -282,7 +284,9 @@ references:
 ```yaml
 module_name: 'remotethreadcontext'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
+  /image:C:\Windows\System32\svchost.exe
+  /ppid:31337
+  /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via SetThreadContext.
@@ -311,7 +315,9 @@ references:
 ```yaml
 module_name: 'processhollow'
 arguments: |
-  /image:C:\Windows\System32\svchost.exe /ppid:31337 /blockDlls:True
+  /image:C:\Windows\System32\svchost.exe
+  /ppid:31337
+  /blockDlls:True
 description: |
   Injects shellcode into a newly spawned remote process.
   Thread execution via NtResumeThread (hollowing with shellcode).

