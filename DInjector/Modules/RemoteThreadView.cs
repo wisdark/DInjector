@@ -247,7 +247,7 @@ namespace DInjector
 
             #endregion
 
-            #region Cleanup
+            #region NtUnmapViewOfSection
 
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtUnmapViewOfSection");
             NtUnmapViewOfSection sysNtUnmapViewOfSection = (NtUnmapViewOfSection)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtUnmapViewOfSection));
@@ -256,10 +256,35 @@ namespace DInjector
                 lhProcess,
                 lbaseAddress);
 
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThreadView) [+] NtUnmapViewOfSection");
+            else
+                Console.WriteLine($"(RemoteThreadView) [-] NtUnmapViewOfSection: {ntstatus}");
+
+            #endregion
+
+            #region NtClose (hSection)
+
             stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
             NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
 
             sysNtClose(hSection);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThreadView) [+] NtClose, hSection");
+            else
+                Console.WriteLine($"(RemoteThreadView) [-] NtClose, hSection: {ntstatus}");
+
+            #endregion
+
+            #region NtClose (rhProcess)
+
+            sysNtClose(rhProcess);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThreadView) [+] NtClose, rhProcess");
+            else
+                Console.WriteLine($"(RemoteThreadView) [-] NtClose, rhProcess: {ntstatus}");
 
             #endregion
         }

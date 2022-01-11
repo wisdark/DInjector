@@ -58,6 +58,9 @@ namespace DInjector
             IntPtr ThreadHandle,
             ref uint SuspendCount);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtClose(IntPtr hObject);
+
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
         {
@@ -240,6 +243,20 @@ namespace DInjector
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtResumeThread");
             else
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtResumeThread: {ntstatus}");
+
+            #endregion
+
+            #region NtClose (hProcess)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
+            NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
+
+            sysNtClose(hProcess);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtClose, hProcess");
+            else
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtClose, hProcess: {ntstatus}");
 
             #endregion
         }

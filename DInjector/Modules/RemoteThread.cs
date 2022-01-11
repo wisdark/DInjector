@@ -53,6 +53,9 @@ namespace DInjector
             int maximumStackSize,
             IntPtr attributeList);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtClose(IntPtr hObject);
+
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
         {
@@ -192,6 +195,20 @@ namespace DInjector
                 Console.WriteLine("(RemoteThread) [+] NtCreateThreadEx");
             else
                 Console.WriteLine($"(RemoteThread) [-] NtCreateThreadEx: {ntstatus}");
+
+            #endregion
+
+            #region NtClose (hProcess)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
+            NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
+
+            sysNtClose(hProcess);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThread) [+] NtClose, hProcess");
+            else
+                Console.WriteLine($"(RemoteThread) [-] NtClose, hProcess: {ntstatus}");
 
             #endregion
         }

@@ -91,9 +91,9 @@ namespace DInjector
                 ref returnLength);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtAllocateVirtualMemory");
+                Console.WriteLine("(ProcessHollow) [+] NtQueryInformationProcess");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtAllocateVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollow) [-] NtQueryInformationProcess: {ntstatus}");
 
             #endregion
 
