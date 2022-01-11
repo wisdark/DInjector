@@ -30,7 +30,7 @@ Features:
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
-> All information contained in this repository is provided for educational and research purposes only. The author is not responsible for any misuse of this tool.
+> **DISCLAIMER.** All information contained in this repository is provided for educational and research purposes only. The author is not responsible for any misuse of this tool.
 
 ## Usage
 
