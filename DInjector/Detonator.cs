@@ -136,6 +136,11 @@ namespace DInjector
                         shellcodeBytes,
                         int.Parse(options["/pid"]));
                     break;
+                case "remotethreadkernelcb":
+                    RemoteThreadKernelCB.Execute(
+                        shellcodeBytes,
+                        int.Parse(options["/pid"]));
+                    break;
                 case "remotethreadapc":
                     RemoteThreadAPC.Execute(
                         shellcodeBytes,

