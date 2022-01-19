@@ -9,11 +9,6 @@ namespace DInjector
     {
         private byte[] key;
 
-        public AES(string password)
-        {
-            this.key = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
-
         private byte[] PerformCryptography(ICryptoTransform cryptoTransform, byte[] data)
         {
             using (var memoryStream = new MemoryStream())
@@ -23,6 +18,11 @@ namespace DInjector
                     cryptoStream.FlushFinalBlock();
                     return memoryStream.ToArray();
                 }
+        }
+
+        public AES(string password)
+        {
+            this.key = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
         public byte[] Decrypt(byte[] data)

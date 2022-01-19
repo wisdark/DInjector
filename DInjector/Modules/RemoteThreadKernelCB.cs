@@ -205,7 +205,7 @@ namespace DInjector
             ref COPYDATASTRUCT lParam);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate DI.Data.Native.NTSTATUS NtClose(IntPtr hObject);
+        delegate bool CloseHandle(IntPtr hObject);
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
@@ -225,7 +225,7 @@ namespace DInjector
             public IntPtr UniqueThread;
         }
 
-        public static IntPtr findWindowExA(IntPtr parentHandle, IntPtr hWndChildAfter, string className, string windowTitle)
+        private static IntPtr findWindowExA(IntPtr parentHandle, IntPtr hWndChildAfter, string className, string windowTitle)
         {
             object[] parameters = { parentHandle, hWndChildAfter, className, windowTitle };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "FindWindowExA", typeof(FindWindowExA), ref parameters);
@@ -233,12 +233,18 @@ namespace DInjector
             return result;
         }
 
-        public static IntPtr sendMessageA(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam)
+        private static IntPtr sendMessageA(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam)
         {
             object[] parameters = { hWnd, Msg, wParam, lParam };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "SendMessageA", typeof(SendMessageA), ref parameters);
 
             return result;
+        }
+
+        private static void closeHandle(IntPtr hObject)
+        {
+            object[] parameters = { hObject };
+            _ = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "CloseHandle", typeof(CloseHandle), ref parameters);
         }
 
         public static void Execute(byte[] shellcodeBytes, int processID)
@@ -494,30 +500,8 @@ namespace DInjector
 
             #endregion
 
-            #region NtClose (hWindow)
-
-            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
-            NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
-
-            sysNtClose(hWindow);
-
-            if (ntstatus == 0)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtClose, hWindow");
-            else
-                Console.WriteLine($"(RemoteThreadKernelCB) [-] NtClose, hWindow: {ntstatus}");
-
-            #endregion
-
-            #region NtClose (hProcess)
-
-            sysNtClose(hProcess);
-
-            if (ntstatus == 0)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtClose, hProcess");
-            else
-                Console.WriteLine($"(RemoteThreadKernelCB) [-] NtClose, hProcess: {ntstatus}");
-
-            #endregion
+            closeHandle(hWindow);
+            closeHandle(hProcess);
         }
     }
 }

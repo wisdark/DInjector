@@ -31,7 +31,7 @@ namespace DInjector
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void pFunction();
 
-        public static bool openClipboard(IntPtr hWndNewOwner)
+        private static bool openClipboard(IntPtr hWndNewOwner)
         {
             object[] parameters = { hWndNewOwner };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "OpenClipboard", typeof(OpenClipboard), ref parameters);
@@ -39,7 +39,7 @@ namespace DInjector
             return result;
         }
 
-        public static IntPtr setClipboardData(uint uFormat, byte[] hMem)
+        private static IntPtr setClipboardData(uint uFormat, byte[] hMem)
         {
             object[] parameters = { uFormat, hMem };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "SetClipboardData", typeof(SetClipboardData), ref parameters);
@@ -47,7 +47,7 @@ namespace DInjector
             return result;
         }
 
-        public static bool closeClipboard()
+        private static bool closeClipboard()
         {
             object[] parameters = { };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("user32.dll", "CloseClipboard", typeof(CloseClipboard), ref parameters);

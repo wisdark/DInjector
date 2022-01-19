@@ -34,7 +34,7 @@ Features:
 
 ## Usage
 
-1. Compile the project in VS.
+1. Compile the project in VS (or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline/releases/tag/v0.8.2)).
 2. Generate a shellcode for your favourite C2:
 
 ```console
@@ -136,6 +136,7 @@ calls:
     2: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     3: 'NtCreateThreadEx'
     4: 'NtWaitForSingleObject'
+    5: 'NtFreeVirtualMemory (shellcode)'
 opsec_safe: false
 references:
   - 'https://github.com/XingYun-Cloud/D-Invoke-syscall/blob/main/Program.cs'
@@ -176,7 +177,6 @@ calls:
     3: 'NtWriteVirtualMemory (shellcode)'
     4: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     5: 'NtCreateThreadEx'
-    6: 'NtClose (hProcess)'
 opsec_safe: false
 references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
@@ -199,7 +199,6 @@ calls:
     2: 'NtWriteVirtualMemory (shellcode)'
     3: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     4: 'NtCreateThreadEx'
-    5: 'NtClose (hProcess)'
 opsec_safe: -
 references:
   - 'https://www.netero1010-securitylab.com/eavsion/alternative-process-injection'
@@ -222,8 +221,6 @@ calls:
     4: 'NtMapViewOfSection (PAGE_EXECUTE_READ)'
     5: 'RtlCreateUserThread'
     6: 'NtUnmapViewOfSection'
-    7: 'NtClose (hSection)'
-    8: 'NtClose (rhProcess)'
 opsec_safe: false
 references:
   - 'https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/Sections%20Shellcode%20Process%20Injector/Program.cs'
@@ -248,7 +245,6 @@ calls:
     5: 'NtCreateThreadEx (CREATE_SUSPENDED)'
     6: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     7: 'NtResumeThread'
-    8: 'NtClose (hProcess)'
 opsec_safe: true
 references:
   - 'https://labs.f-secure.com/blog/bypassing-windows-defender-runtime-scanning/'
@@ -277,8 +273,6 @@ calls:
      9: 'NtProtectVirtualMemory (PAGE_READWRITE)'
     10: 'NtWriteVirtualMemory (origData)'
     11: 'NtProtectVirtualMemory (oldProtect)'
-    12: 'NtClose (hWindow)'
-    13: 'NtClose (hProcess)'
   - user32.dll:
      1: 'FindWindowExA'
      2: 'SendMessageA'
@@ -313,7 +307,6 @@ calls:
     4: 'NtOpenThread'
     5: 'NtQueueApcThread'
     6: 'NtAlertResumeThread'
-    7: 'NtClose (hThread)'
 opsec_safe: true
 references:
   - 'https://rastamouse.me/exploring-process-injection-opsec-part-2/'

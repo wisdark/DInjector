@@ -23,7 +23,7 @@ namespace DInjector
             IntPtr lpLocaleEnumProc,
             int dwFlags);
 
-        public static IntPtr heapCreate(uint flOptions, UIntPtr dwInitialSize, UIntPtr dwMaximumSize)
+        private static IntPtr heapCreate(uint flOptions, UIntPtr dwInitialSize, UIntPtr dwMaximumSize)
         {
             object[] parameters = { flOptions, dwInitialSize, dwMaximumSize };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "HeapCreate", typeof(HeapCreate), ref parameters);
@@ -31,7 +31,7 @@ namespace DInjector
             return result;
         }
 
-        public static IntPtr uuidFromStringA(string stringUuid, IntPtr heapPointer)
+        private static IntPtr uuidFromStringA(string stringUuid, IntPtr heapPointer)
         {
             object[] parameters = { stringUuid, heapPointer };
             var result = (IntPtr)DI.DynamicInvoke.Generic.DynamicAPIInvoke("rpcrt4.dll", "UuidFromStringA", typeof(UuidFromStringA), ref parameters);
@@ -39,7 +39,7 @@ namespace DInjector
             return result;
         }
 
-        public static bool enumSystemLocalesA(IntPtr lpLocaleEnumProc, int dwFlags)
+        private static bool enumSystemLocalesA(IntPtr lpLocaleEnumProc, int dwFlags)
         {
             object[] parameters = { lpLocaleEnumProc, dwFlags };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "EnumSystemLocalesA", typeof(EnumSystemLocalesA), ref parameters);
