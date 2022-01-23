@@ -25,7 +25,7 @@ Features:
 * Fully ported to D/Invoke API
 * Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
 * Built-in AMSI bypass
-* [PPID spoofing](https://www.ired.team/offensive-security/defense-evasion/parent-process-id-ppid-spoofing) and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
+* [PPID Spoofing](https://www.ired.team/offensive-security/defense-evasion/parent-process-id-ppid-spoofing) and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
 * Sandbox detection & evasion
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
@@ -58,13 +58,13 @@ Features:
 
 :warning: I **do not** recommend putting the assembly on disk because it will very likely be flagged.
 
-Required global arguments:
+Global arguments:
 
-| Name        | Example Value            | Description                                                        |
-|-------------|--------------------------|--------------------------------------------------------------------|
-| `/am51`     | `True`, `False`          | Applies AMSI bypass                                                |
-| `/sc`       | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a Base64 string) |
-| `/password` | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
+| Name        | Required | Example Value            | Description                                                        |
+|-------------|----------|--------------------------|--------------------------------------------------------------------|
+| `/sc`       | ✔️        | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a base64 string) |
+| `/password` | ✔️        | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
+| `/am51`     | ❌        | `true`, `false`          | Applies AMSI bypass                                                |
 
 ## Modules
 
@@ -75,12 +75,12 @@ Required global arguments:
 ```yaml
 module_name: 'functionpointer'
 description: |
-  Allocates a RW memory region, copies the shellcode into it
-  and executes it like a function.
+  Allocates a RW memory region, copies the shellcode into it and executes it like a function.
 calls:
   - ntdll.dll:
     1: 'NtAllocateVirtualMemory (PAGE_READWRITE)'
     2: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+    3: 'NtFreeVirtualMemory'
 opsec_safe: false
 references:
   - 'http://disbauxes.upc.es/code/two-basic-ways-to-run-and-test-shellcode/'
@@ -109,8 +109,7 @@ references:
 ```yaml
 module_name: 'clipboardpointer'
 description: |
-  Copies shellcode bytes into the clipboard,
-  sets RX on it and executes it like a function.
+  Copies shellcode bytes into the clipboard, sets RX on it and executes it like a function.
 calls:
   - user32.dll:
     1: 'OpenClipboard'
@@ -136,7 +135,7 @@ calls:
     2: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     3: 'NtCreateThreadEx'
     4: 'NtWaitForSingleObject'
-    5: 'NtFreeVirtualMemory (shellcode)'
+    5: 'NtFreeVirtualMemory'
 opsec_safe: false
 references:
   - 'https://github.com/XingYun-Cloud/D-Invoke-syscall/blob/main/Program.cs'
@@ -177,6 +176,7 @@ calls:
     3: 'NtWriteVirtualMemory (shellcode)'
     4: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     5: 'NtCreateThreadEx'
+    6: 'NtFreeVirtualMemory'
 opsec_safe: false
 references:
   - 'https://github.com/S3cur3Th1sSh1t/SharpImpersonation/blob/main/SharpImpersonation/Shellcode.cs'
@@ -190,8 +190,7 @@ arguments: |
   /pid:1337
   /dll:msvcp_win.dll
 description: |
-  Injects shellcode into an existing remote process
-  overwriting one of its loaded modules' .text section.
+  Injects shellcode into an existing remote process overwriting one of its loaded modules' .text section.
   Thread execution via NtCreateThreadEx.
 calls:
   - ntdll.dll:
@@ -245,6 +244,7 @@ calls:
     5: 'NtCreateThreadEx (CREATE_SUSPENDED)'
     6: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
     7: 'NtResumeThread'
+    8: 'NtFreeVirtualMemory'
 opsec_safe: true
 references:
   - 'https://labs.f-secure.com/blog/bypassing-windows-defender-runtime-scanning/'
@@ -261,6 +261,9 @@ description: |
   Injects shellcode into an existing remote GUI process by spoofing the fnCOPYDATA value in KernelCallbackTable.
   Thread execution via SendMessageA.
 calls:
+  - user32.dll:
+     1: 'FindWindowExA'
+     2: 'SendMessageA'
   - ntdll.dll:
      1: 'NtOpenProcess'
      2: 'NtQueryInformationProcess'
@@ -273,10 +276,7 @@ calls:
      9: 'NtProtectVirtualMemory (PAGE_READWRITE)'
     10: 'NtWriteVirtualMemory (origData)'
     11: 'NtProtectVirtualMemory (oldProtect)'
-  - user32.dll:
-     1: 'FindWindowExA'
-     2: 'SendMessageA'
-opsec_safe: true
+opsec_safe: -
 references:
   - 'https://t0rchwo0d.github.io/windows/Windows-Process-Injection-Technique-KernelCallbackTable/'
   - 'https://modexp.wordpress.com/2019/05/25/windows-injection-finspy/'
@@ -307,6 +307,7 @@ calls:
     4: 'NtOpenThread'
     5: 'NtQueueApcThread'
     6: 'NtAlertResumeThread'
+    7: 'NtFreeVirtualMemory'
 opsec_safe: true
 references:
   - 'https://rastamouse.me/exploring-process-injection-opsec-part-2/'
@@ -338,6 +339,7 @@ calls:
     5: 'GetThreadContext'
     6: 'SetThreadContext'
     7: 'NtResumeThread'
+    8: 'NtFreeVirtualMemory'
 opsec_safe: true
 references:
   - 'https://blog.xpnsec.com/undersanding-and-evading-get-injectedthread/'
@@ -371,6 +373,45 @@ calls:
 opsec_safe: false
 references:
   - 'https://github.com/CCob/SharpBlock/blob/master/Program.cs'
+```
+
+### [ModuleStomping](/DInjector/Modules/ModuleStomping.cs)
+
+```yaml
+module_name: 'modulestomping'
+arguments: |
+  /image:C:\Windows\System32\svchost.exe
+  /stomp:xpsservices.dll
+  /export:DllCanUnloadNow
+  /ppid:31337
+  /blockDlls:True
+description: |
+  Loads a trusted module from disk and overwrites one of its exported functions.
+  Thread execution via NtCreateThreadEx.
+calls:
+  - kernel32.dll:
+     1: 'InitializeProcThreadAttributeList'
+     2: 'UpdateProcThreadAttribute (blockDLLs)'
+     3: 'UpdateProcThreadAttribute (PPID)'
+     4: 'CreateProcessA'
+  - ntdll.dll:
+     1: 'NtAllocateVirtualMemory (bModuleName, PAGE_READWRITE)'
+     2: 'NtAllocateVirtualMemory (shim, PAGE_READWRITE)'
+     3: 'NtWriteVirtualMemory (bModuleName)'
+     4: 'NtWriteVirtualMemory (shim)'
+     5: 'NtProtectVirtualMemory (shim, PAGE_EXECUTE_READ)'
+     6: 'NtCreateThreadEx (shim)'
+     7: 'NtWaitForSingleObject'
+     8: 'NtFreeVirtualMemory (allocModule)'
+     9: 'NtFreeVirtualMemory (allocShim)'
+    10: 'NtProtectVirtualMemory (shellcode, PAGE_READWRITE)'
+    11: 'NtWriteVirtualMemory (shellcode)'
+    12: 'NtProtectVirtualMemory (shellcode, PAGE_EXECUTE_READ)'
+    13: 'NtCreateThreadEx (shellcode)'
+opsec_safe: true
+references:
+  - 'https://offensivedefence.co.uk/posts/module-stomping/'
+  - 'https://github.com/rasta-mouse/TikiTorch/blob/master/TikiLoader/Stomper.cs'
 ```
 
 ## Credits
