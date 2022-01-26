@@ -155,8 +155,8 @@ namespace DInjector
                         ppid,
                         blockDlls);
                     break;
-                case "processhollow":
-                    ProcessHollow.Execute(
+                case "processhollowing":
+                    ProcessHollowing.Execute(
                         shellcodeBytes,
                         options["/image"],
                         ppid,

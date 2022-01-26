@@ -5,7 +5,7 @@ using DI = DInvoke;
 
 namespace DInjector
 {
-    class ProcessHollow
+    class ProcessHollowing
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate Boolean CreateProcess(
@@ -100,9 +100,9 @@ namespace DInjector
                 ref returnLength);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtQueryInformationProcess");
+                Console.WriteLine("(ProcessHollowing) [+] NtQueryInformationProcess");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtQueryInformationProcess: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtQueryInformationProcess: {ntstatus}");
 
             #endregion
 
@@ -126,9 +126,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollowing) [+] NtReadVirtualMemory");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtReadVirtualMemory: {ntstatus}");
 
             byte[] baseAddressBytes = new byte[bytesRead];
             Marshal.Copy(baseAddress, baseAddressBytes, 0, (int)bytesRead);
@@ -147,9 +147,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollowing) [+] NtReadVirtualMemory");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtReadVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtReadVirtualMemory: {ntstatus}");
 
             byte[] dataBytes = new byte[bytesRead];
             Marshal.Copy(data, dataBytes, 0, (int)bytesRead);
@@ -183,9 +183,9 @@ namespace DInjector
                 out oldProtect);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE");
+                Console.WriteLine("(ProcessHollowing) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -208,9 +208,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtWriteVirtualMemory");
+                Console.WriteLine("(ProcessHollowing) [+] NtWriteVirtualMemory");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtWriteVirtualMemory: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtWriteVirtualMemory: {ntstatus}");
 
             #endregion
 
@@ -224,9 +224,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtProtectVirtualMemory, oldProtect");
+                Console.WriteLine("(ProcessHollowing) [+] NtProtectVirtualMemory, oldProtect");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
 
             #endregion
 
@@ -242,9 +242,9 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == 0)
-                Console.WriteLine("(ProcessHollow) [+] NtResumeThread");
+                Console.WriteLine("(ProcessHollowing) [+] NtResumeThread");
             else
-                Console.WriteLine($"(ProcessHollow) [-] NtResumeThread: {ntstatus}");
+                Console.WriteLine($"(ProcessHollowing) [-] NtResumeThread: {ntstatus}");
 
             #endregion
 

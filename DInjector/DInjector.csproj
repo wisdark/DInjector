@@ -73,7 +73,7 @@
     <Compile Include="Modules\CurrentThread.cs" />
     <Compile Include="Modules\FunctionPointer.cs" />
     <Compile Include="Modules\FunctionPointerV2.cs" />
-    <Compile Include="Modules\ProcessHollow.cs" />
+    <Compile Include="Modules\ProcessHollowing.cs" />
     <Compile Include="Modules\ModuleStomping.cs" />
     <Compile Include="Modules\RemoteThreadKernelCB.cs" />
     <Compile Include="Modules\RemoteThreadDll.cs" />

