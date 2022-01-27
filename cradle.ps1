@@ -70,6 +70,10 @@ $methods = @("remotethreadapc", "remotethreadcontext", "processhollowing", "modu
 if ($methods.Contains($A)) {
     try {
         $I = (Get-Process $I -ErrorAction Stop).Id
+        # if multiple processes exist with the same name, arbitrary select the first one
+        if ($I -is [array]) {
+            $I = $I[0]
+        }
     }
     catch {
         $I = 0
