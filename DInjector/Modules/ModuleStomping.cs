@@ -8,6 +8,11 @@ using DI = DInvoke;
 
 namespace DInjector
 {
+    /// <summary>
+    /// Based on:
+    /// https://offensivedefence.co.uk/posts/module-stomping/
+    /// https://github.com/rasta-mouse/TikiTorch/blob/master/TikiLoader/Stomper.cs
+    /// </summary>
     public class ModuleStomping
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]

@@ -6,6 +6,11 @@ using DI = DInvoke;
 
 namespace DInjector
 {
+    /// <summary>
+    /// Based on:
+    /// https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/
+    /// https://github.com/rasta-mouse/TikiTorch/blob/master/TikiLoader/Utilities.cs
+    /// </summary>
     class SpawnProcess
     {
         public static bool Is64Bit => IntPtr.Size == 8;
