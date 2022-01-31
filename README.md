@@ -61,7 +61,7 @@ enc: data
 
 Global arguments:
 
-| Name        | Required | Example Value            | Description                                                        |
+| Name        | Required | Example Values           | Description                                                        |
 |-------------|----------|--------------------------|--------------------------------------------------------------------|
 | `/sc`       | ✔️        | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a base64 string) |
 | `/password` | ✔️        | `Passw0rd!`              | Sets password to decrypt the shellcode                             |

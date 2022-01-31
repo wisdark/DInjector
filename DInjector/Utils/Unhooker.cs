@@ -83,12 +83,14 @@ namespace DInjector
 
                 // Find the path for ntdll by looking at the currently loaded module
                 string NtdllPath = string.Empty;
+                var hModule = IntPtr.Zero;
                 ProcessModuleCollection ProcModules = Process.GetCurrentProcess().Modules;
                 foreach (ProcessModule Mod in ProcModules)
                 {
                     if (Mod.FileName.EndsWith("ntdll.dll", StringComparison.OrdinalIgnoreCase))
                     {
                         NtdllPath = Mod.FileName;
+                        hModule = Mod.BaseAddress;
                     }
                 }
 
@@ -128,15 +130,6 @@ namespace DInjector
                 }
 
                 #endregion
-
-                var hModule = IntPtr.Zero;
-
-                foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
-                    if (module.ModuleName == "ntdll.dll")
-                    {
-                        hModule = module.BaseAddress;
-                        break;
-                    }
 
                 MODULEINFO mi = new MODULEINFO();
                 getModuleInformation(Process.GetCurrentProcess().Handle, hModule, out mi, (uint)Marshal.SizeOf(mi));
