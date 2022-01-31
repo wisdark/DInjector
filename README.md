@@ -65,8 +65,9 @@ Global arguments:
 |-------------|----------|--------------------------|--------------------------------------------------------------------|
 | `/sc`       | ✔️        | `http://10.10.13.37/enc` | Sets shellcode path (can be loaded from URL or as a base64 string) |
 | `/password` | ✔️        | `Passw0rd!`              | Sets password to decrypt the shellcode                             |
-| `/am51`     | ❌        | `true`, `false`          | Applies AMSI bypass                                                |
-| `/sleep`    | ❌        | `10`, `25`               | Number of seconds (approx.) to sleep before execution              |
+| `/am51`     | ❌        | `True`, `False`          | Applies AMSI bypass                                                |
+| `/unhook`   | ❌        | `True`, `False`          | Unhooks ntdll.dll                                                  |
+| `/sleep`    | ❌        | `10`, `25`               | Sets number of seconds (approx.) to sleep before execution         |
 
 ## Modules
 

