@@ -30,13 +30,13 @@ Features:
 * Prime numbers calculation to emulate sleep for in-memory scan evasion
 * Ntdll.dll unhooking
 
-:information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've shrinked it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
+:information_source: Based on my testings the DInvoke NuGet [package](https://www.nuget.org/packages/DInvoke/) itself is being flagged by many commercial AV/EDR solutions when incuded as an embedded resource via [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/) (or similar approaches), so I've [shrinked](https://github.com/snovvcrash/DInvoke/tree/dinjector) it a bit and included from [source](https://github.com/TheWover/DInvoke) to achieve better OpSec.
 
 > **DISCLAIMER.** All information contained in this repository is provided for educational and research purposes only. The author is not responsible for any illegal use of this tool.
 
 ## Usage
 
-1. Compile the project in VS (or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline/releases/tag/v0.8.2)).
+1. Compile the project in VS.
 2. Generate a shellcode of your choice:
 
 ```console
