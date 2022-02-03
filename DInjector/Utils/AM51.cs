@@ -80,13 +80,12 @@ namespace DInjector
                 NtProtectVirtualMemory sysNtProtectVirtualMemory = (NtProtectVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtProtectVirtualMemory));
 
                 DI.Data.Native.NTSTATUS ntstatus;
-                IntPtr hProcess = Process.GetCurrentProcess().Handle;
                 IntPtr protectAddress = procAddress;
                 var regionSize = (IntPtr)patch.Length;
                 uint oldProtect = 0;
 
                 ntstatus = sysNtProtectVirtualMemory(
-                    hProcess,
+                    Process.GetCurrentProcess().Handle,
                     ref protectAddress,
                     ref regionSize,
                     DI.Data.Win32.WinNT.PAGE_READWRITE,
@@ -107,7 +106,7 @@ namespace DInjector
                 regionSize = (IntPtr)patch.Length;
 
                 ntstatus = sysNtProtectVirtualMemory(
-                    hProcess,
+                    Process.GetCurrentProcess().Handle,
                     ref procAddress,
                     ref regionSize,
                     oldProtect,
