@@ -31,11 +31,11 @@ class XOR:
 		self.key = key
 
 	def encrypt(self, raw):
-		output = ''
+		output = b''
 		for i in range(len(raw)):
 			c = raw[i]
 			k = self.key[i % len(self.key)]
-			output += chr(ord(c) ^ ord(k))
+			output += bytes([c ^ ord(k)])
 
 		return output
 

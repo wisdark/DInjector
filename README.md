@@ -52,8 +52,6 @@ Features:
 4. Serve the encrypted shellcode:
 
 ```console
-~$ file enc
-enc: data
 ~$ sudo python3 -m http.server 80
 ```
 
