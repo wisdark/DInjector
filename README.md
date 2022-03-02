@@ -36,7 +36,7 @@ Features:
 
 ## Usage
 
-1. Compile the project in VS.
+1. Compile the project in VS (or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline/releases/tag/v0.8.2)).
 2. Generate a shellcode of your choice:
 
 ```console
